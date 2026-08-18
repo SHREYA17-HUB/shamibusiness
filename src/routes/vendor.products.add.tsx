@@ -45,19 +45,19 @@ function VendorAddProduct() {
   const cat = categories.find((c) => c.name === category);
   const sku = category ? `SBV-${category.slice(0, 2).toUpperCase()}-${1000 + Math.floor(Math.random() * 8999)}` : "";
 
-  const handleSubmit = () => {
-    if (!name.trim()) return toast.error("Product name is required");
-    if (!category) return toast.error("Please select a category");
-    if (!subcategory) return toast.error("Please select a subcategory");
-    if (!weight.trim()) return toast.error("Weight / pack size is required");
+  const handleSubmit = (): void => {
+    if (!name.trim()) { toast.error("Product name is required"); return; }
+    if (!category) { toast.error("Please select a category"); return; }
+    if (!subcategory) { toast.error("Please select a subcategory"); return; }
+    if (!weight.trim()) { toast.error("Weight / pack size is required"); return; }
     const mrpNum = Number(mrp);
     const priceNum = Number(price);
     const stockNum = Number(stock);
-    if (!mrpNum || mrpNum <= 0) return toast.error("Enter a valid MRP");
-    if (!priceNum || priceNum <= 0) return toast.error("Enter a valid selling price");
-    if (priceNum > mrpNum) return toast.error("Selling price cannot exceed MRP");
-    if (!stock || stockNum < 0) return toast.error("Enter a valid stock quantity");
-    if (!description.trim()) return toast.error("Description is required");
+    if (!mrpNum || mrpNum <= 0) { toast.error("Enter a valid MRP"); return; }
+    if (!priceNum || priceNum <= 0) { toast.error("Enter a valid selling price"); return; }
+    if (priceNum > mrpNum) { toast.error("Selling price cannot exceed MRP"); return; }
+    if (!stock || stockNum < 0) { toast.error("Enter a valid stock quantity"); return; }
+    if (!description.trim()) { toast.error("Description is required"); return; }
 
     const sampleImage = seedProducts.find((p) => p.category === category)?.image ?? seedProducts[0]!.image;
     const id = `P${Date.now().toString().slice(-6)}`;

@@ -53,7 +53,7 @@ function Checkout() {
         lines: cartItems,
         method,
         payment: method === "Cash on Delivery" ? "COD" : "Paid",
-        coupon: appliedCoupon?.code,
+        ...(appliedCoupon ? { coupon: appliedCoupon.code } : {}),
       });
       clearCart();
       setPlacedId(order.id);
