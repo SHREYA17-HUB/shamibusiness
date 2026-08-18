@@ -20,12 +20,35 @@ export const Route = createFileRoute("/cart")({
 });
 
 function Cart() {
-  const { cartItems, setQty, removeFromCart, subtotal } = useApp();
+  const { cartItems, setQty, removeFromCart, subtotal, coupons, clearCart } = useApp();
   const [coupon, setCoupon] = useState("");
-  const [discount, setDiscount] = useState(0);
+  const [applied, setApplied] = useState<string | null>(null);
   const delivery = subtotal > 10000 || subtotal === 0 ? 0 : 250;
   const tax = Math.round(subtotal * 0.05);
+  const appliedCoupon = applied ? coupons.find((c) => c.code === applied) : undefined;
+  const discount = appliedCoupon
+    ? Math.min(appliedCoupon.max, appliedCoupon.type === "Percentage" ? Math.round((subtotal * parseFloat(appliedCoupon.value)) / 100) : parseFloat(appliedCoupon.value.replace(/[^0-9.]/g, "")))
+    : 0;
   const total = subtotal + delivery + tax - discount;
+
+  const applyCoupon = () => {
+    const code = coupon.trim().toUpperCase();
+    const found = coupons.find((c) => c.code === code);
+    if (!found) {
+      toast.error("Invalid coupon code");
+      return;
+    }
+    if (found.status !== "Active") {
+      toast.error(`Coupon ${code} is ${found.status.toLowerCase()}`);
+      return;
+    }
+    if (subtotal < found.min) {
+      toast.error(`Minimum order value of ${inr(found.min)} required for ${code}`);
+      return;
+    }
+    setApplied(code);
+    toast.success("Coupon applied", { description: `${code} — ${found.value} off` });
+  };
 
   return (
     <SiteLayout>
@@ -62,7 +85,14 @@ function Cart() {
                   </p>
                   <div className="mt-3 flex flex-wrap items-center gap-3">
                     <div className="flex items-center rounded-md border border-border">
-                      <button onClick={() => setQty(product.id, qty - 1)} className="p-2 text-navy hover:text-gold" aria-label="Decrease">
+                      <button
+                        onClick={() => {
+                          setQty(product.id, qty - 1);
+                          if (qty <= 1) toast.info("Minimum quantity is 1");
+                        }}
+                        className="p-2 text-navy hover:text-gold"
+                        aria-label="Decrease"
+                      >
                         <Minus className="h-3.5 w-3.5" />
                       </button>
                       <span className="w-9 text-center text-sm font-semibold text-navy">{qty}</span>
@@ -73,21 +103,31 @@ function Cart() {
                     <button
                       onClick={() => {
                         removeFromCart(product.id);
-                        toast.success("Item removed");
+                        toast.success("Item removed", { description: product.name });
                       }}
                       className="flex items-center gap-1.5 text-xs font-semibold text-danger hover:underline"
                     >
                       <Trash2 className="h-3.5 w-3.5" /> Remove
                     </button>
-                    <button className="text-xs font-semibold text-slate hover:text-gold">Save for later</button>
                   </div>
                 </div>
                 <p className="text-lg font-bold text-navy">{inr(product.price * qty)}</p>
               </div>
             ))}
-            <Link to="/shop" className="inline-block text-sm font-semibold text-navy hover:text-gold">
-              ← Continue shopping
-            </Link>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <Link to="/shop" className="inline-block text-sm font-semibold text-navy hover:text-gold">
+                ← Continue shopping
+              </Link>
+              <button
+                onClick={() => {
+                  clearCart();
+                  toast.success("Cart cleared");
+                }}
+                className="text-sm font-semibold text-danger hover:underline"
+              >
+                Clear cart
+              </button>
+            </div>
           </div>
 
           <aside className="h-max rounded-lg border border-border bg-card p-6 shadow-card lg:sticky lg:top-40">
@@ -96,7 +136,7 @@ function Cart() {
               <Row label="Subtotal" value={inr(subtotal)} />
               <Row label="Delivery charges" value={delivery === 0 ? "Free" : inr(delivery)} />
               <Row label="GST (5%)" value={inr(tax)} />
-              {discount > 0 && <Row label="Coupon discount" value={`- ${inr(discount)}`} gold />}
+              {discount > 0 && <Row label={`Coupon discount (${applied})`} value={`- ${inr(discount)}`} gold />}
               <div className="hairline-gold my-2" />
               <div className="flex justify-between text-base font-bold text-navy">
                 <span>Grand total</span>
@@ -107,14 +147,7 @@ function Cart() {
             <div className="mt-5 flex gap-2">
               <Input value={coupon} onChange={(e) => setCoupon(e.target.value.toUpperCase())} placeholder="Coupon code" className="h-10" />
               <button
-                onClick={() => {
-                  if (coupon === "SHAMI10") {
-                    setDiscount(Math.min(500, Math.round(subtotal * 0.1)));
-                    toast.success("Coupon applied", { description: "SHAMI10 — 10% off" });
-                  } else {
-                    toast.error("Invalid coupon code");
-                  }
-                }}
+                onClick={applyCoupon}
                 className="rounded-md bg-navy px-4 text-xs font-semibold text-white hover:bg-midnight"
               >
                 Apply

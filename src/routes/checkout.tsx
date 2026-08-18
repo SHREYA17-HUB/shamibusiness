@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { SiteLayout, Breadcrumbs } from "@/components/site/SiteLayout";
-import { addresses, inr } from "@/lib/data";
+import { inr } from "@/lib/data";
 import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -23,14 +23,48 @@ const steps = ["Address", "Delivery", "Payment", "Review", "Confirmation"];
 const methods = ["UPI", "Credit Card", "Debit Card", "Net Banking", "Cash on Delivery"];
 
 function Checkout() {
-  const { cartItems, subtotal, clearCart } = useApp();
+  const { cartItems, subtotal, clearCart, addresses, placeOrder, coupons } = useApp();
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [addr, setAddr] = useState(addresses[0]!.id);
+  const [addr, setAddr] = useState(addresses[0]?.id ?? "");
   const [ship, setShip] = useState("Standard");
   const [method, setMethod] = useState("UPI");
+  const [couponCode, setCouponCode] = useState("");
+  const [placedId, setPlacedId] = useState<string | null>(null);
   const shipCost = ship === "Express" ? 650 : subtotal > 10000 ? 0 : 250;
   const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + shipCost + tax;
+  const appliedCoupon = coupons.find((c) => c.code === couponCode);
+  const discount = appliedCoupon
+    ? Math.min(appliedCoupon.max, appliedCoupon.type === "Percentage" ? Math.round((subtotal * parseFloat(appliedCoupon.value)) / 100) : parseFloat(appliedCoupon.value.replace(/[^0-9.]/g, "")))
+    : 0;
+  const total = subtotal + shipCost + tax - discount;
+
+  const goNext = () => {
+    if (step === 0 && !addr) {
+      toast.error("Please select or add a delivery address");
+      return;
+    }
+    if (step === 3) {
+      if (cartItems.length === 0) {
+        toast.error("Your cart is empty");
+        return;
+      }
+      const order = placeOrder({
+        lines: cartItems,
+        method,
+        payment: method === "Cash on Delivery" ? "COD" : "Paid",
+        ...(appliedCoupon ? { coupon: appliedCoupon.code } : {}),
+      });
+      clearCart();
+      setPlacedId(order.id);
+      toast.success("Order placed", { description: `${order.id} confirmed` });
+      setStep(step + 1);
+      return;
+    }
+    setStep(step + 1);
+  };
+
+  const selectedAddress = addresses.find((a) => a.id === addr);
 
   return (
     <SiteLayout>
@@ -82,7 +116,9 @@ function Checkout() {
                       </p>
                     </button>
                   ))}
-                  <button className="text-sm font-semibold text-navy hover:text-gold">+ Add new address</button>
+                  <Link to="/account/addresses" className="text-sm font-semibold text-navy hover:text-gold">
+                    + Add new address
+                  </Link>
                 </div>
               </>
             )}
@@ -131,6 +167,15 @@ function Checkout() {
                     </button>
                   ))}
                 </div>
+                <div className="mt-5">
+                  <label className="mb-1.5 block text-xs font-semibold text-charcoal">Have a coupon?</label>
+                  <input
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    placeholder="Coupon code (optional)"
+                    className="h-10 w-full max-w-xs rounded-md border border-border px-3 text-sm"
+                  />
+                </div>
               </>
             )}
 
@@ -152,9 +197,10 @@ function Checkout() {
                   ))}
                 </div>
                 <dl className="mt-5 space-y-1.5 text-sm text-slate">
-                  <div>Address: {addresses.find((a) => a.id === addr)?.line}</div>
+                  <div>Address: {selectedAddress?.line}</div>
                   <div>Delivery: {ship} Freight</div>
                   <div>Payment: {method}</div>
+                  {appliedCoupon && <div>Coupon: {appliedCoupon.code}</div>}
                 </dl>
               </>
             )}
@@ -166,14 +212,20 @@ function Checkout() {
                 </span>
                 <h2 className="mt-5 text-xl font-bold text-navy">Order Confirmed</h2>
                 <p className="mt-2 text-sm text-slate">
-                  Order ID <span className="font-bold text-gold">ORD-10009</span> · Payment{" "}
+                  Order ID <span className="font-bold text-gold">{placedId}</span> · Payment{" "}
                   {method === "Cash on Delivery" ? "pending (COD)" : "successful"} · Estimated delivery in{" "}
                   {ship === "Express" ? "1 day" : "2–4 days"}
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
-                  <Link to="/account" className="rounded-md bg-navy px-6 py-3 text-sm font-semibold text-white hover:bg-midnight">
-                    Track Order
-                  </Link>
+                  {placedId && (
+                    <Link
+                      to="/account/orders/$id"
+                      params={{ id: placedId }}
+                      className="rounded-md bg-navy px-6 py-3 text-sm font-semibold text-white hover:bg-midnight"
+                    >
+                      View Order
+                    </Link>
+                  )}
                   <Link to="/shop" className="rounded-md border border-navy px-6 py-3 text-sm font-semibold text-navy hover:bg-navy hover:text-white">
                     Continue Shopping
                   </Link>
@@ -190,13 +242,7 @@ function Checkout() {
                   Back
                 </button>
                 <button
-                  onClick={() => {
-                    if (step === 3) {
-                      clearCart();
-                      toast.success("Order placed", { description: "ORD-10009 confirmed" });
-                    }
-                    setStep(step + 1);
-                  }}
+                  onClick={goNext}
                   className="rounded-md bg-gold px-6 py-2.5 text-sm font-bold text-midnight transition-colors hover:bg-gold-light"
                 >
                   {step === 3 ? "Place Order" : "Continue"}
@@ -212,6 +258,7 @@ function Checkout() {
                 ["Subtotal", inr(subtotal)],
                 ["Delivery", shipCost === 0 ? "Free" : inr(shipCost)],
                 ["GST (5%)", inr(tax)],
+                ...(discount > 0 ? [["Coupon discount", `- ${inr(discount)}`]] : []),
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between">
                   <span className="text-slate">{k}</span>
