@@ -37,10 +37,13 @@ import { Route as AdminReturnsRouteImport } from './routes/admin.returns'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminVendorsRouteImport } from './routes/admin.vendors'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as VendorIndexRouteImport } from './routes/vendor.index'
 import { Route as VendorDashboardRouteImport } from './routes/vendor.dashboard'
+import { Route as VendorEarningsRouteImport } from './routes/vendor.earnings'
 import { Route as VendorInventoryRouteImport } from './routes/vendor.inventory'
 import { Route as VendorLoginRouteImport } from './routes/vendor.login'
 import { Route as VendorOrdersRouteImport } from './routes/vendor.orders'
+import { Route as VendorPayoutsRouteImport } from './routes/vendor.payouts'
 import { Route as VendorProductsRouteImport } from './routes/vendor.products'
 import { Route as VendorRegisterRouteImport } from './routes/vendor.register'
 import { Route as AdminCustomersIdRouteImport } from './routes/admin.customers.$id'
@@ -189,9 +192,19 @@ const ProductIdRoute = ProductIdRouteImport.update({
   path: '/product/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VendorIndexRoute = VendorIndexRouteImport.update({
+  id: '/vendor/',
+  path: '/vendor/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VendorDashboardRoute = VendorDashboardRouteImport.update({
   id: '/vendor/dashboard',
   path: '/vendor/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VendorEarningsRoute = VendorEarningsRouteImport.update({
+  id: '/vendor/earnings',
+  path: '/vendor/earnings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VendorInventoryRoute = VendorInventoryRouteImport.update({
@@ -207,6 +220,11 @@ const VendorLoginRoute = VendorLoginRouteImport.update({
 const VendorOrdersRoute = VendorOrdersRouteImport.update({
   id: '/vendor/orders',
   path: '/vendor/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VendorPayoutsRoute = VendorPayoutsRouteImport.update({
+  id: '/vendor/payouts',
+  path: '/vendor/payouts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VendorProductsRoute = VendorProductsRouteImport.update({
@@ -274,12 +292,15 @@ export interface FileRoutesByFullPath {
   '/admin/vendors': typeof AdminVendorsRoute
   '/product/$id': typeof ProductIdRoute
   '/vendor/dashboard': typeof VendorDashboardRoute
+  '/vendor/earnings': typeof VendorEarningsRoute
   '/vendor/inventory': typeof VendorInventoryRoute
   '/vendor/login': typeof VendorLoginRoute
   '/vendor/orders': typeof VendorOrdersRouteWithChildren
+  '/vendor/payouts': typeof VendorPayoutsRoute
   '/vendor/products': typeof VendorProductsRouteWithChildren
   '/vendor/register': typeof VendorRegisterRoute
   '/admin/': typeof AdminIndexRoute
+  '/vendor/': typeof VendorIndexRoute
   '/admin/customers/$id': typeof AdminCustomersIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
@@ -315,12 +336,15 @@ export interface FileRoutesByTo {
   '/admin/vendors': typeof AdminVendorsRoute
   '/product/$id': typeof ProductIdRoute
   '/vendor/dashboard': typeof VendorDashboardRoute
+  '/vendor/earnings': typeof VendorEarningsRoute
   '/vendor/inventory': typeof VendorInventoryRoute
   '/vendor/login': typeof VendorLoginRoute
   '/vendor/orders': typeof VendorOrdersRouteWithChildren
+  '/vendor/payouts': typeof VendorPayoutsRoute
   '/vendor/products': typeof VendorProductsRouteWithChildren
   '/vendor/register': typeof VendorRegisterRoute
   '/admin': typeof AdminIndexRoute
+  '/vendor': typeof VendorIndexRoute
   '/admin/customers/$id': typeof AdminCustomersIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
@@ -357,12 +381,15 @@ export interface FileRoutesById {
   '/admin/vendors': typeof AdminVendorsRoute
   '/product/$id': typeof ProductIdRoute
   '/vendor/dashboard': typeof VendorDashboardRoute
+  '/vendor/earnings': typeof VendorEarningsRoute
   '/vendor/inventory': typeof VendorInventoryRoute
   '/vendor/login': typeof VendorLoginRoute
   '/vendor/orders': typeof VendorOrdersRouteWithChildren
+  '/vendor/payouts': typeof VendorPayoutsRoute
   '/vendor/products': typeof VendorProductsRouteWithChildren
   '/vendor/register': typeof VendorRegisterRoute
   '/admin/': typeof AdminIndexRoute
+  '/vendor/': typeof VendorIndexRoute
   '/admin/customers/$id': typeof AdminCustomersIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
@@ -400,12 +427,15 @@ export interface FileRouteTypes {
     | '/admin/vendors'
     | '/product/$id'
     | '/vendor/dashboard'
+    | '/vendor/earnings'
     | '/vendor/inventory'
     | '/vendor/login'
     | '/vendor/orders'
+    | '/vendor/payouts'
     | '/vendor/products'
     | '/vendor/register'
     | '/admin/'
+    | '/vendor/'
     | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/products/$id'
@@ -441,12 +471,15 @@ export interface FileRouteTypes {
     | '/admin/vendors'
     | '/product/$id'
     | '/vendor/dashboard'
+    | '/vendor/earnings'
     | '/vendor/inventory'
     | '/vendor/login'
     | '/vendor/orders'
+    | '/vendor/payouts'
     | '/vendor/products'
     | '/vendor/register'
     | '/admin'
+    | '/vendor'
     | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/products/$id'
@@ -482,12 +515,15 @@ export interface FileRouteTypes {
     | '/admin/vendors'
     | '/product/$id'
     | '/vendor/dashboard'
+    | '/vendor/earnings'
     | '/vendor/inventory'
     | '/vendor/login'
     | '/vendor/orders'
+    | '/vendor/payouts'
     | '/vendor/products'
     | '/vendor/register'
     | '/admin/'
+    | '/vendor/'
     | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/products/$id'
@@ -524,12 +560,15 @@ export interface RootRouteChildren {
   AdminVendorsRoute: typeof AdminVendorsRoute
   ProductIdRoute: typeof ProductIdRoute
   VendorDashboardRoute: typeof VendorDashboardRoute
+  VendorEarningsRoute: typeof VendorEarningsRoute
   VendorInventoryRoute: typeof VendorInventoryRoute
   VendorLoginRoute: typeof VendorLoginRoute
   VendorOrdersRoute: typeof VendorOrdersRouteWithChildren
+  VendorPayoutsRoute: typeof VendorPayoutsRoute
   VendorProductsRoute: typeof VendorProductsRouteWithChildren
   VendorRegisterRoute: typeof VendorRegisterRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  VendorIndexRoute: typeof VendorIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -730,11 +769,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vendor/': {
+      id: '/vendor/'
+      path: '/vendor'
+      fullPath: '/vendor/'
+      preLoaderRoute: typeof VendorIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vendor/dashboard': {
       id: '/vendor/dashboard'
       path: '/vendor/dashboard'
       fullPath: '/vendor/dashboard'
       preLoaderRoute: typeof VendorDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vendor/earnings': {
+      id: '/vendor/earnings'
+      path: '/vendor/earnings'
+      fullPath: '/vendor/earnings'
+      preLoaderRoute: typeof VendorEarningsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vendor/inventory': {
@@ -756,6 +809,13 @@ declare module '@tanstack/react-router' {
       path: '/vendor/orders'
       fullPath: '/vendor/orders'
       preLoaderRoute: typeof VendorOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vendor/payouts': {
+      id: '/vendor/payouts'
+      path: '/vendor/payouts'
+      fullPath: '/vendor/payouts'
+      preLoaderRoute: typeof VendorPayoutsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vendor/products': {
@@ -899,12 +959,15 @@ const rootRouteChildren: RootRouteChildren = {
   AdminVendorsRoute: AdminVendorsRoute,
   ProductIdRoute: ProductIdRoute,
   VendorDashboardRoute: VendorDashboardRoute,
+  VendorEarningsRoute: VendorEarningsRoute,
   VendorInventoryRoute: VendorInventoryRoute,
   VendorLoginRoute: VendorLoginRoute,
   VendorOrdersRoute: VendorOrdersRouteWithChildren,
+  VendorPayoutsRoute: VendorPayoutsRoute,
   VendorProductsRoute: VendorProductsRouteWithChildren,
   VendorRegisterRoute: VendorRegisterRoute,
   AdminIndexRoute: AdminIndexRoute,
+  VendorIndexRoute: VendorIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
