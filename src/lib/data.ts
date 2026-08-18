@@ -4,8 +4,18 @@ import oilImg from "@/assets/p-oil.jpg";
 import dalImg from "@/assets/p-dal.jpg";
 
 export const inr = (n: number) =>
-  "₹" + n.toLocaleString("en-IN", { maximumFractionDigits: 2 });
+  "₹" + Math.round(n).toLocaleString("en-IN", { maximumFractionDigits: 2 });
 
+/* ---------- deterministic pseudo random ---------- */
+let seed = 20260818;
+const rnd = () => {
+  seed = (seed * 1103515245 + 12345) % 2147483648;
+  return seed / 2147483648;
+};
+const pick = <T,>(arr: T[], i: number): T => arr[i % arr.length]!;
+const rint = (a: number, b: number) => a + Math.floor(rnd() * (b - a + 1));
+
+/* ---------- types ---------- */
 export type Product = {
   id: string;
   name: string;
@@ -18,6 +28,7 @@ export type Product = {
   image: string;
   mrp: number;
   price: number;
+  gst: number;
   rating: number;
   reviews: number;
   stock: number;
@@ -25,52 +36,124 @@ export type Product = {
   sold: number;
   weight: string;
   status: "approved" | "pending" | "rejected";
+  active: boolean;
   tags: ("featured" | "bestseller" | "new" | "offer" | "recommended")[];
   description: string;
+  specs: { label: string; value: string }[];
+  created: string;
+  updated: string;
 };
 
 export const categories = [
   { name: "Sugar", icon: "Candy", subs: ["S1 Sugar", "S2 Sugar", "M30 Sugar"], count: 42 },
-  { name: "Rice", icon: "Wheat", subs: ["Raw Rice", "Steam Rice"], count: 28 },
-  { name: "Oils", icon: "Droplets", subs: ["Sunflower Oil 1 Litre", "Sunflower Oil 500ml"], count: 19 },
-  { name: "Pulses", icon: "Bean", subs: ["Toor Dal", "Urad Dal", "Chana Dal"], count: 34 },
+  { name: "Rice", icon: "Wheat", subs: ["Raw Rice", "Steam Rice", "Basmati Rice"], count: 38 },
+  { name: "Oils", icon: "Droplets", subs: ["Sunflower Oil 1 Litre", "Sunflower Oil 500ml", "Groundnut Oil"], count: 26 },
+  { name: "Pulses", icon: "Bean", subs: ["Toor Dal", "Urad Dal", "Chana Dal", "Moong Dal"], count: 34 },
+  { name: "Flours", icon: "Wheat", subs: ["Chakki Atta", "Maida", "Besan"], count: 22 },
+  { name: "Spices", icon: "Flame", subs: ["Turmeric", "Chilli Powder", "Coriander"], count: 30 },
+  { name: "Dry Fruits", icon: "Nut", subs: ["Cashew", "Almond", "Raisins"], count: 18 },
+  { name: "Tea & Coffee", icon: "Coffee", subs: ["CTC Tea", "Filter Coffee"], count: 14 },
+  { name: "Jaggery", icon: "Candy", subs: ["Organic Jaggery", "Jaggery Powder"], count: 12 },
+  { name: "Salt & Sweeteners", icon: "Sparkles", subs: ["Iodised Salt", "Rock Salt"], count: 11 },
 ];
 
-const img = (i: number) => [sugarImg, riceImg, oilImg, dalImg][i % 4]!;
+const catImage: Record<string, string> = {
+  Sugar: sugarImg, Rice: riceImg, Oils: oilImg, Pulses: dalImg,
+  Flours: riceImg, Spices: dalImg, "Dry Fruits": dalImg,
+  "Tea & Coffee": dalImg, Jaggery: sugarImg, "Salt & Sweeteners": sugarImg,
+};
 
-const seeds: Array<[string, string, string, string, number, number]> = [
+/* ---------- vendors ---------- */
+const vendorSeed: Array<[string, string, string, string, string, string, "approved" | "pending" | "suspended", number]> = [
+  ["V01", "Shami Sugar Mills", "Imran Shami", "imran@shamisugar.in", "+91 98450 11223", "Belagavi, KA", "approved", 10],
+  ["V02", "Kaveri Agro Traders", "Suresh Rao", "sales@kaveriagro.in", "+91 98860 44551", "Mysuru, KA", "approved", 12],
+  ["V03", "Deccan Oil Company", "Farida Sheikh", "info@deccanoil.com", "+91 99001 77882", "Hyderabad, TS", "approved", 11],
+  ["V04", "Annapurna Pulses", "Vikram Patil", "vikram@annapurnapulses.in", "+91 90080 33445", "Solapur, MH", "pending", 10],
+  ["V05", "Bharat Grains LLP", "Nikhil Jain", "hello@bharatgrains.in", "+91 97400 66778", "Pune, MH", "suspended", 10],
+  ["V06", "Konkan Spice House", "Meera Naik", "orders@konkanspice.in", "+91 98220 55117", "Ratnagiri, MH", "approved", 13],
+  ["V07", "Ganga Flour Mills", "Rajeev Mishra", "rajeev@gangaflour.in", "+91 93110 88220", "Kanpur, UP", "approved", 9],
+  ["V08", "Nilgiri Tea Estates", "Anitha Menon", "anitha@nilgiritea.in", "+91 94470 33119", "Coonoor, TN", "approved", 14],
+  ["V09", "Rajasthan Dry Fruits Co", "Mahendra Singh", "sales@rajdryfruits.in", "+91 99280 44662", "Jaipur, RJ", "approved", 15],
+  ["V10", "Sagar Jaggery Works", "Prakash Shetty", "prakash@sagarjaggery.in", "+91 98860 99001", "Mandya, KA", "pending", 10],
+];
+
+export const vendors = vendorSeed.map(([id, business, owner, email, phone, city, status, commission], i) => ({
+  id, business, owner, email, phone, city, commission,
+  status: status as string,
+  gst: `${27 + (i % 8)}ABCDE${1000 + i * 137}F1Z${i % 9}`,
+  rating: Math.round((3.8 + (i % 6) * 0.2) * 10) / 10,
+  joined: `${String(3 + (i % 24)).padStart(2, "0")} ${pick(["Jan", "Feb", "Mar", "Apr", "May", "Jun"], i)} 202${i % 3 === 0 ? 5 : 6}`,
+  bank: `HDFC Bank ••••${4200 + i * 17}`,
+  products: 0,
+  orders: 0,
+  sales: 0,
+}));
+
+/* ---------- products (52) ---------- */
+const productSeed: Array<[string, string, string, string, number, number]> = [
   ["S1 Refined Sugar 50kg Bag", "Sugar", "S1 Sugar", "50 kg", 2650, 2399],
   ["S2 Refined Sugar 50kg Bag", "Sugar", "S2 Sugar", "50 kg", 2550, 2299],
   ["M30 Premium Sugar 50kg", "Sugar", "M30 Sugar", "50 kg", 2750, 2549],
   ["S1 Sugar Retail Pack 1kg", "Sugar", "S1 Sugar", "1 kg", 62, 54],
   ["M30 Sugar Retail Pack 5kg", "Sugar", "M30 Sugar", "5 kg", 310, 279],
+  ["S2 Sugar Retail Pack 2kg", "Sugar", "S2 Sugar", "2 kg", 128, 109],
+  ["Brown Sugar Natural 1kg", "Sugar", "M30 Sugar", "1 kg", 145, 119],
+  ["Sugar Cubes Box 500g", "Sugar", "S1 Sugar", "500 g", 98, 84],
   ["Premium Raw Rice 25kg", "Rice", "Raw Rice", "25 kg", 1650, 1499],
   ["Steam Rice Sona Masoori 25kg", "Rice", "Steam Rice", "25 kg", 1750, 1585],
   ["Steam Rice Retail 5kg", "Rice", "Steam Rice", "5 kg", 420, 379],
+  ["Raw Rice Retail 10kg", "Rice", "Raw Rice", "10 kg", 780, 699],
+  ["Basmati Rice Classic 5kg", "Rice", "Basmati Rice", "5 kg", 690, 615],
+  ["Basmati Rice Premium 25kg", "Rice", "Basmati Rice", "25 kg", 3250, 2949],
+  ["Idli Rice 25kg", "Rice", "Raw Rice", "25 kg", 1520, 1385],
   ["Sunflower Oil 1 Litre", "Oils", "Sunflower Oil 1 Litre", "1 L", 165, 142],
   ["Sunflower Oil 500ml", "Oils", "Sunflower Oil 500ml", "500 ml", 92, 79],
   ["Sunflower Oil 15L Tin", "Oils", "Sunflower Oil 1 Litre", "15 L", 2250, 2049],
+  ["Groundnut Oil 1 Litre", "Oils", "Groundnut Oil", "1 L", 218, 189],
+  ["Groundnut Oil 5L Can", "Oils", "Groundnut Oil", "5 L", 1050, 949],
+  ["Refined Sunflower Oil 5L Can", "Oils", "Sunflower Oil 1 Litre", "5 L", 820, 739],
   ["Toor Dal Premium 1kg", "Pulses", "Toor Dal", "1 kg", 185, 159],
   ["Urad Dal Gota 1kg", "Pulses", "Urad Dal", "1 kg", 172, 148],
   ["Chana Dal Select 1kg", "Pulses", "Chana Dal", "1 kg", 132, 112],
   ["Toor Dal Bulk 30kg", "Pulses", "Toor Dal", "30 kg", 4650, 4299],
   ["Chana Dal Bulk 30kg", "Pulses", "Chana Dal", "30 kg", 3600, 3299],
+  ["Moong Dal Yellow 1kg", "Pulses", "Moong Dal", "1 kg", 158, 136],
+  ["Moong Dal Bulk 30kg", "Pulses", "Moong Dal", "30 kg", 4200, 3849],
+  ["Urad Dal Bulk 30kg", "Pulses", "Urad Dal", "30 kg", 4980, 4599],
+  ["Chakki Fresh Atta 10kg", "Flours", "Chakki Atta", "10 kg", 520, 459],
+  ["Chakki Fresh Atta 5kg", "Flours", "Chakki Atta", "5 kg", 275, 242],
+  ["Maida Refined Flour 25kg", "Flours", "Maida", "25 kg", 1180, 1049],
+  ["Besan Gram Flour 1kg", "Flours", "Besan", "1 kg", 148, 126],
+  ["Besan Gram Flour 25kg", "Flours", "Besan", "25 kg", 3450, 3149],
+  ["Turmeric Powder 1kg", "Spices", "Turmeric", "1 kg", 320, 279],
+  ["Turmeric Powder 500g", "Spices", "Turmeric", "500 g", 175, 149],
+  ["Red Chilli Powder 1kg", "Spices", "Chilli Powder", "1 kg", 385, 339],
+  ["Coriander Powder 1kg", "Spices", "Coriander", "1 kg", 290, 249],
+  ["Coriander Seeds 5kg", "Spices", "Coriander", "5 kg", 1250, 1129],
+  ["Chilli Powder Bulk 10kg", "Spices", "Chilli Powder", "10 kg", 3600, 3299],
+  ["Cashew W240 Whole 1kg", "Dry Fruits", "Cashew", "1 kg", 980, 869],
+  ["Cashew W320 Whole 5kg", "Dry Fruits", "Cashew", "5 kg", 4450, 4099],
+  ["Almond California 1kg", "Dry Fruits", "Almond", "1 kg", 890, 799],
+  ["Raisins Long Green 1kg", "Dry Fruits", "Raisins", "1 kg", 340, 289],
+  ["Almond Premium 5kg", "Dry Fruits", "Almond", "5 kg", 4250, 3899],
+  ["CTC Tea Dust 1kg", "Tea & Coffee", "CTC Tea", "1 kg", 420, 369],
+  ["CTC Tea Leaf 5kg", "Tea & Coffee", "CTC Tea", "5 kg", 1980, 1799],
+  ["Filter Coffee Powder 1kg", "Tea & Coffee", "Filter Coffee", "1 kg", 640, 579],
+  ["Organic Jaggery Blocks 5kg", "Jaggery", "Organic Jaggery", "5 kg", 480, 419],
+  ["Jaggery Powder 1kg", "Jaggery", "Jaggery Powder", "1 kg", 128, 109],
+  ["Iodised Salt 1kg", "Salt & Sweeteners", "Iodised Salt", "1 kg", 28, 22],
+  ["Himalayan Rock Salt 1kg", "Salt & Sweeteners", "Rock Salt", "1 kg", 96, 79],
 ];
 
-export const vendors = [
-  { id: "V01", business: "Shami Sugar Mills", owner: "Imran Shami", email: "imran@shamisugar.in", phone: "+91 98450 11223", city: "Belagavi, KA", gst: "29ABCDE1234F1Z5", status: "approved", products: 24, orders: 412, sales: 2845000, commission: 10 },
-  { id: "V02", business: "Kaveri Agro Traders", owner: "Suresh Rao", email: "sales@kaveriagro.in", phone: "+91 98860 44551", city: "Mysuru, KA", gst: "29PQRSX9876L1Z2", status: "approved", products: 18, orders: 287, sales: 1620000, commission: 12 },
-  { id: "V03", business: "Deccan Oil Company", owner: "Farida Sheikh", email: "info@deccanoil.com", phone: "+91 99001 77882", city: "Hyderabad, TS", gst: "36MNOPQ5544K1Z9", status: "approved", products: 12, orders: 196, sales: 980000, commission: 11 },
-  { id: "V04", business: "Annapurna Pulses", owner: "Vikram Patil", email: "vikram@annapurnapulses.in", phone: "+91 90080 33445", city: "Solapur, MH", gst: "27LMNOP2233J1Z4", status: "pending", products: 6, orders: 0, sales: 0, commission: 10 },
-  { id: "V05", business: "Bharat Grains LLP", owner: "Nikhil Jain", email: "hello@bharatgrains.in", phone: "+91 97400 66778", city: "Pune, MH", gst: "27QRSTU8899H1Z7", status: "suspended", products: 9, orders: 44, sales: 210000, commission: 10 },
-];
+const dt = (i: number, base = 1) =>
+  `${String(1 + ((i * 7 + base) % 27)).padStart(2, "0")} ${pick(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"], i + base)} 2026`;
 
-export const products: Product[] = seeds.map(([name, category, subcategory, weight, mrp, price], i) => {
-  const vendor = vendors[i % 3]!;
+export const products: Product[] = productSeed.map(([name, category, subcategory, weight, mrp, price], i) => {
+  const vendor = vendors[i % vendors.length]!;
   const tags: Product["tags"] = [];
   if (i % 4 === 0) tags.push("featured");
   if (i % 3 === 0) tags.push("bestseller");
-  if (i % 5 === 0) tags.push("new");
+  if (i % 7 === 0) tags.push("new");
   if (mrp - price > 100) tags.push("offer");
   if (i % 2 === 0) tags.push("recommended");
   return {
@@ -82,97 +165,156 @@ export const products: Product[] = seeds.map(([name, category, subcategory, weig
     vendorId: vendor.id,
     category,
     subcategory,
-    image: img(["Sugar", "Rice", "Oils", "Pulses"].indexOf(category)),
+    image: catImage[category] ?? sugarImg,
     mrp,
     price,
-    rating: Math.round((3.9 + (i % 6) * 0.18) * 10) / 10,
+    gst: category === "Oils" || category === "Sugar" ? 5 : 12,
+    rating: Math.round((3.8 + (i % 7) * 0.17) * 10) / 10,
     reviews: 18 + i * 7,
-    stock: i % 7 === 3 ? 0 : 12 + i * 9,
+    stock: i % 9 === 3 ? 0 : i % 6 === 1 ? rint(4, 18) : rint(40, 460),
     reserved: i % 5,
     sold: 40 + i * 13,
     weight,
-    status: i % 9 === 4 ? "pending" : i % 11 === 7 ? "rejected" : "approved",
+    status: i % 13 === 4 ? "pending" : i % 17 === 7 ? "rejected" : "approved",
+    active: i % 19 !== 5,
     tags,
     description:
       "Sourced directly from certified mills and packed under strict quality control. FSSAI compliant, moisture-controlled packaging with batch-level traceability for institutional and retail buyers.",
+    specs: [
+      { label: "Pack Size", value: weight },
+      { label: "Brand", value: "Shami Select" },
+      { label: "Shelf Life", value: "12 months from packing" },
+      { label: "FSSAI Licence", value: "10019011002345" },
+      { label: "Storage", value: "Cool, dry place away from sunlight" },
+      { label: "Country of Origin", value: "India" },
+    ],
+    created: dt(i, 1),
+    updated: dt(i, 5),
   };
 });
 
 export const byTag = (tag: Product["tags"][number]) =>
   products.filter((p) => p.tags.includes(tag)).slice(0, 8);
 
-export const customers = [
-  { id: "C1001", name: "Rahul Deshpande", email: "rahul.d@gmail.com", phone: "+91 98765 43210", joined: "12 Jan 2026", orders: 24, spend: 148500, status: "active" },
-  { id: "C1002", name: "Sneha Kulkarni", email: "sneha.k@outlook.com", phone: "+91 91234 56780", joined: "04 Feb 2026", orders: 11, spend: 62300, status: "active" },
-  { id: "C1003", name: "Mohammed Arif", email: "arif@arifstores.in", phone: "+91 99887 66554", joined: "22 Feb 2026", orders: 48, spend: 512400, status: "active" },
-  { id: "C1004", name: "Priya Nair", email: "priya.nair@gmail.com", phone: "+91 90011 22334", joined: "09 Mar 2026", orders: 3, spend: 8900, status: "blocked" },
-  { id: "C1005", name: "Anand Textiles Canteen", email: "purchase@anandtex.in", phone: "+91 98800 12345", joined: "18 Mar 2026", orders: 31, spend: 386700, status: "active" },
+/* ---------- customers (32) ---------- */
+const firstNames = ["Rahul", "Sneha", "Mohammed", "Priya", "Anand", "Kavya", "Vishal", "Deepa", "Arjun", "Nisha", "Rohit", "Meena", "Sanjay", "Pooja", "Karthik", "Divya", "Imtiaz", "Lakshmi", "Naveen", "Shalini", "Ganesh", "Ritu", "Manoj", "Anjali", "Sameer", "Harini", "Tarun", "Bhavna", "Yusuf", "Ashwini", "Nitin", "Swati"];
+const lastNames = ["Deshpande", "Kulkarni", "Arif", "Nair", "Reddy", "Iyer", "Sharma", "Patel", "Menon", "Joshi", "Verma", "Rao", "Gupta", "Shetty", "Pillai", "Bhat", "Khan", "Naidu", "Kumar", "Mishra", "Hegde", "Chauhan", "Yadav", "Desai", "Sheikh", "Krishnan", "Malhotra", "Saxena", "Ansari", "Kamath", "Bansal", "Jain"];
+const cityState: Array<[string, string, string]> = [
+  ["Belagavi", "Karnataka", "590010"], ["Mysuru", "Karnataka", "570001"], ["Bengaluru", "Karnataka", "560034"],
+  ["Hyderabad", "Telangana", "500081"], ["Pune", "Maharashtra", "411014"], ["Mumbai", "Maharashtra", "400070"],
+  ["Chennai", "Tamil Nadu", "600042"], ["Kochi", "Kerala", "682024"], ["Jaipur", "Rajasthan", "302017"],
+  ["Kanpur", "Uttar Pradesh", "208012"], ["Nagpur", "Maharashtra", "440015"], ["Coimbatore", "Tamil Nadu", "641012"],
 ];
+const streets = ["Plot 14, Industrial Estate", "Shop 6, Market Road", "42 MG Road", "Flat 302, Sai Residency", "18 Gandhi Nagar", "Unit 9, APMC Yard", "77 Station Road", "Door 5-2-19, Bazaar Street"];
+
+export const customers = Array.from({ length: 32 }, (_, i) => {
+  const name = `${pick(firstNames, i)} ${pick(lastNames, i * 3 + 1)}`;
+  const [city, state, pin] = cityState[i % cityState.length]!;
+  const ord = rint(1, 52);
+  return {
+    id: `C${1001 + i}`,
+    name,
+    email: `${name.split(" ")[0]!.toLowerCase()}.${name.split(" ")[1]!.slice(0, 3).toLowerCase()}${i}@${pick(["gmail.com", "outlook.com", "yahoo.in", "rediffmail.com"], i)}`,
+    phone: `+91 9${rint(1000, 9999)} ${rint(10000, 99999)}`,
+    city,
+    state,
+    pin,
+    address: `${pick(streets, i)}, ${city}, ${state} ${pin}`,
+    joined: dt(i, 2),
+    orders: ord,
+    spend: ord * rint(1800, 9800),
+    lastOrder: dt(i, 6),
+    status: (i % 11 === 4 ? "blocked" : "active") as string,
+    avatar: name.split(" ").map((w) => w[0]).join(""),
+  };
+});
 
 export type OrderStatus =
-  | "Placed"
-  | "Payment Confirmed"
-  | "Accepted"
-  | "Packed"
-  | "Dispatched"
-  | "Out for Delivery"
-  | "Delivered"
-  | "Cancelled";
+  | "Placed" | "Payment Confirmed" | "Accepted" | "Packed"
+  | "Dispatched" | "Out for Delivery" | "Delivered" | "Cancelled";
 
 export const orderStages: OrderStatus[] = [
-  "Placed",
-  "Payment Confirmed",
-  "Accepted",
-  "Packed",
-  "Dispatched",
-  "Out for Delivery",
-  "Delivered",
+  "Placed", "Payment Confirmed", "Accepted", "Packed", "Dispatched", "Out for Delivery", "Delivered",
 ];
 
+export type OrderItem = { product: Product; qty: number; vendor: string; vendorId: string };
 export type Order = {
   id: string;
   date: string;
   customer: string;
   customerId: string;
-  items: { product: Product; qty: number; vendor: string; vendorId: string }[];
+  email: string;
+  phone: string;
+  items: OrderItem[];
+  subtotal: number;
+  discount: number;
+  tax: number;
+  shipping: number;
   amount: number;
   payment: "Paid" | "Pending" | "Failed" | "Refunded" | "COD";
   method: string;
+  txn: string;
   status: OrderStatus;
   address: string;
+  city: string;
+  state: string;
+  pin: string;
   delivery: string;
+  coupon?: string;
 };
 
-export const orders: Order[] = [
-  ["ORD-10001", "16 Aug 2026", 0, "Paid", "UPI", "Out for Delivery"],
-  ["ORD-10002", "15 Aug 2026", 1, "Paid", "Credit Card", "Dispatched"],
-  ["ORD-10003", "14 Aug 2026", 2, "COD", "Cash on Delivery", "Packed"],
-  ["ORD-10004", "12 Aug 2026", 4, "Paid", "Net Banking", "Delivered"],
-  ["ORD-10005", "11 Aug 2026", 2, "Pending", "UPI", "Placed"],
-  ["ORD-10006", "09 Aug 2026", 1, "Refunded", "UPI", "Cancelled"],
-  ["ORD-10007", "07 Aug 2026", 0, "Paid", "Debit Card", "Delivered"],
-  ["ORD-10008", "05 Aug 2026", 4, "Paid", "UPI", "Delivered"],
-].map((row, i) => {
-  const [id, date, ci, payment, method, status] = row as [string, string, number, Order["payment"], string, OrderStatus];
-  const c = customers[ci]!;
-  const items = [
-    { product: products[i]!, qty: 2 + (i % 3), vendor: products[i]!.vendor, vendorId: products[i]!.vendorId },
-    { product: products[(i + 5) % products.length]!, qty: 1 + (i % 2), vendor: products[(i + 5) % products.length]!.vendor, vendorId: products[(i + 5) % products.length]!.vendorId },
-  ];
+const methods = ["UPI", "Credit Card", "Debit Card", "Net Banking", "Cash on Delivery", "UPI", "Credit Card"];
+const statusCycle: OrderStatus[] = ["Delivered", "Out for Delivery", "Dispatched", "Packed", "Accepted", "Placed", "Delivered", "Payment Confirmed", "Cancelled", "Delivered"];
+
+export const buildOrder = (
+  id: string,
+  date: string,
+  customerIndex: number,
+  items: OrderItem[],
+  payment: Order["payment"],
+  method: string,
+  status: OrderStatus,
+  coupon?: string,
+): Order => {
+  const c = customers[customerIndex % customers.length]!;
+  const subtotal = items.reduce((s, it) => s + it.product.price * it.qty, 0);
+  const discount = coupon ? Math.round(subtotal * 0.05) : 0;
+  const tax = Math.round((subtotal - discount) * 0.05);
+  const shipping = subtotal > 5000 ? 0 : 149;
   return {
-    id,
-    date,
-    customer: c.name,
-    customerId: c.id,
+    id, date,
+    customer: c.name, customerId: c.id, email: c.email, phone: c.phone,
+    items, subtotal, discount, tax, shipping,
+    amount: subtotal - discount + tax + shipping,
+    payment, method,
+    txn: `TXN-9${id.replace(/\D/g, "").slice(-5)}`,
+    status,
+    address: c.address, city: c.city, state: c.state, pin: c.pin,
+    delivery: "Standard Freight — 2 to 4 days",
+    ...(coupon ? { coupon } : {}),
+  };
+};
+
+export const orders: Order[] = Array.from({ length: 54 }, (_, i) => {
+  const n = 1 + (i % 3);
+  const items: OrderItem[] = Array.from({ length: n }, (_, k) => {
+    const p = products[(i * 5 + k * 11) % products.length]!;
+    return { product: p, qty: 1 + ((i + k) % 6), vendor: p.vendor, vendorId: p.vendorId };
+  });
+  const method = pick(methods, i);
+  const payment: Order["payment"] =
+    method === "Cash on Delivery" ? "COD" : i % 13 === 5 ? "Pending" : i % 17 === 9 ? "Refunded" : i % 19 === 11 ? "Failed" : "Paid";
+  return buildOrder(
+    `ORD-1${String(10001 + i).slice(-4)}${i}`.slice(0, 12),
+    dt(i, 3),
+    i,
     items,
-    amount: items.reduce((s, it) => s + it.product.price * it.qty, 0),
     payment,
     method,
-    status,
-    address: "Plot 14, Industrial Estate, Belagavi, Karnataka 590010",
-    delivery: "Standard Freight — 2 to 4 days",
-  };
-});
+    pick(statusCycle, i),
+    i % 6 === 0 ? "SHAMI10" : undefined,
+  );
+}).map((o, i) => ({ ...o, id: `ORD-${10001 + i}` }));
 
 export const vendorSubOrders = orders.flatMap((o) =>
   Array.from(new Set(o.items.map((i) => i.vendorId))).map((vid, idx) => ({
@@ -188,8 +330,8 @@ export const vendorSubOrders = orders.flatMap((o) =>
   })),
 );
 
-export const payments = orders.map((o, i) => ({
-  txn: `TXN-9${String(1000 + i)}`,
+export const payments = orders.map((o) => ({
+  txn: o.txn,
   order: o.id,
   customer: o.customer,
   vendor: o.items[0]!.vendor,
@@ -197,25 +339,20 @@ export const payments = orders.map((o, i) => ({
   method: o.method,
   date: o.date,
   status:
-    o.payment === "Paid"
-      ? "Successful"
-      : o.payment === "Pending"
-        ? "Pending"
-        : o.payment === "Refunded"
-          ? "Refunded"
-          : o.payment === "COD"
-            ? "Pending"
-            : "Failed",
+    o.payment === "Paid" ? "Successful"
+      : o.payment === "Pending" || o.payment === "COD" ? "Pending"
+        : o.payment === "Refunded" ? "Refunded" : "Failed",
+  refund: o.payment === "Refunded" ? "Refunded to source" : "—",
 }));
 
-export const payouts = vendors.slice(0, 4).map((v, i) => ({
-  id: `PO-20${26}${String(i + 1).padStart(3, "0")}`,
+export const payouts = vendors.map((v, i) => ({
+  id: `PO-2026${String(i + 1).padStart(3, "0")}`,
   vendor: v.business,
   vendorId: v.id,
-  date: ["14 Aug 2026", "07 Aug 2026", "31 Jul 2026", "24 Jul 2026"][i]!,
-  amount: [184500, 96200, 64800, 41200][i]!,
+  date: dt(i, 4),
+  amount: rint(28000, 240000),
   method: "NEFT",
-  status: ["Paid", "Paid", "Processing", "Pending"][i]!,
+  status: pick(["Paid", "Paid", "Processing", "Pending"], i),
 }));
 
 export const coupons = [
@@ -223,26 +360,98 @@ export const coupons = [
   { code: "SUGARBULK", type: "Fixed", value: "₹750", min: 25000, max: 750, start: "05 Aug 2026", end: "05 Oct 2026", limit: 200, used: 48, status: "Active" },
   { code: "FIRSTORDER", type: "Percentage", value: "15%", min: 999, max: 300, start: "01 Jul 2026", end: "31 Aug 2026", limit: 1000, used: 764, status: "Active" },
   { code: "MONSOON5", type: "Percentage", value: "5%", min: 500, max: 150, start: "01 Jun 2026", end: "31 Jul 2026", limit: 400, used: 400, status: "Expired" },
+  { code: "RICE200", type: "Fixed", value: "₹200", min: 3000, max: 200, start: "10 Aug 2026", end: "10 Oct 2026", limit: 300, used: 87, status: "Active" },
+  { code: "OILFEST", type: "Percentage", value: "8%", min: 1500, max: 400, start: "01 Aug 2026", end: "31 Aug 2026", limit: 250, used: 122, status: "Active" },
+  { code: "GSTSAVER", type: "Fixed", value: "₹1000", min: 50000, max: 1000, start: "01 Jul 2026", end: "31 Dec 2026", limit: 100, used: 19, status: "Active" },
+  { code: "WELCOME50", type: "Fixed", value: "₹50", min: 499, max: 50, start: "01 Jan 2026", end: "31 Dec 2026", limit: 5000, used: 2841, status: "Active" },
+  { code: "DIWALI20", type: "Percentage", value: "20%", min: 5000, max: 1500, start: "15 Oct 2026", end: "05 Nov 2026", limit: 800, used: 0, status: "Scheduled" },
+  { code: "PULSEPACK", type: "Fixed", value: "₹350", min: 8000, max: 350, start: "01 Aug 2026", end: "15 Sep 2026", limit: 200, used: 64, status: "Active" },
+  { code: "SUMMER7", type: "Percentage", value: "7%", min: 1200, max: 250, start: "01 Apr 2026", end: "30 Jun 2026", limit: 500, used: 431, status: "Expired" },
 ];
 
-export const reviews = [
-  { id: "R1", product: products[0]!.name, customer: "Mohammed Arif", rating: 5, title: "Consistent mill quality", body: "Third bulk order, grain size and moisture are consistent every time. Invoicing is clean for GST input.", date: "13 Aug 2026", status: "Published" },
-  { id: "R2", product: products[8]!.name, customer: "Sneha Kulkarni", rating: 4, title: "Good packaging", body: "Bottles arrived sealed with no leakage. Delivery was a day later than promised.", date: "10 Aug 2026", status: "Published" },
-  { id: "R3", product: products[11]!.name, customer: "Rahul Deshpande", rating: 5, title: "Great value", body: "Dal quality is premium and price beats local wholesale.", date: "08 Aug 2026", status: "Pending" },
-  { id: "R4", product: products[5]!.name, customer: "Anand Textiles Canteen", rating: 4, title: "Reliable for canteen use", body: "Bought 10 bags for staff canteen. Vendor coordination was smooth.", date: "02 Aug 2026", status: "Published" },
+const reviewTitles = ["Consistent mill quality", "Good packaging", "Great value", "Reliable for canteen use", "Prompt delivery", "Quality as described", "Repeat purchase", "Fair pricing", "Slight delay but good", "Excellent bulk rate"];
+const reviewBodies = [
+  "Grain size and moisture are consistent every time. Invoicing is clean for GST input.",
+  "Sealed packing with no leakage or damage in transit. Will order again.",
+  "Quality is premium and the price beats our local wholesale market.",
+  "Bought for our staff canteen, vendor coordination was smooth throughout.",
+  "Delivered a day ahead of schedule, driver helped with unloading.",
+  "Exactly matched the sample we received earlier from the vendor.",
+  "Fourth order this quarter, service standard has stayed the same.",
+  "Bulk pricing is competitive compared to other B2B platforms.",
+  "Delivery came a day late but the product quality made up for it.",
+  "Great rate for a 30kg bag, packaging was sturdy and clean.",
 ];
 
-export const notifications = [
-  { id: 1, role: "admin", title: "New vendor registration", body: "Annapurna Pulses submitted KYC documents for review.", time: "12 min ago", type: "info" },
-  { id: 2, role: "admin", title: "Product approval request", body: "3 products from Kaveri Agro Traders are awaiting approval.", time: "48 min ago", type: "warning" },
-  { id: 3, role: "admin", title: "Payout request", body: "Deccan Oil Company requested a payout of ₹64,800.", time: "2 hrs ago", type: "info" },
-  { id: 4, role: "vendor", title: "New order received", body: "ORD-10001-V01 — 2 items worth ₹5,197.", time: "20 min ago", type: "success" },
-  { id: 5, role: "vendor", title: "Low stock alert", body: "S1 Sugar Retail Pack 1kg has dropped below 20 units.", time: "1 hr ago", type: "warning" },
-  { id: 6, role: "customer", title: "Out for delivery", body: "ORD-10001 is out for delivery and arrives today.", time: "35 min ago", type: "success" },
-  { id: 7, role: "customer", title: "Payment successful", body: "₹5,197 paid via UPI for ORD-10001.", time: "1 day ago", type: "success" },
+export const reviews = Array.from({ length: 54 }, (_, i) => {
+  const p = products[(i * 3) % products.length]!;
+  const c = customers[(i * 5) % customers.length]!;
+  return {
+    id: `R${100 + i}`,
+    product: p.name,
+    productId: p.id,
+    customer: c.name,
+    customerId: c.id,
+    avatar: c.avatar,
+    vendor: p.vendor,
+    vendorId: p.vendorId,
+    rating: 3 + (i % 3 === 0 ? 2 : i % 2 === 0 ? 1 : 2),
+    title: pick(reviewTitles, i),
+    body: pick(reviewBodies, i + 2),
+    date: dt(i, 7),
+    status: i % 7 === 3 ? "Pending" : i % 11 === 5 ? "Rejected" : "Published",
+  };
+});
+
+export type ReturnRequest = {
+  id: string; order: string; customer: string; product: string; vendor: string;
+  reason: string; amount: number; date: string; status: string; refund: string;
+};
+const reasons = ["Damaged packaging", "Wrong item delivered", "Quality not as expected", "Short quantity received", "Delivery delayed beyond SLA", "Duplicate order placed"];
+export const returns: ReturnRequest[] = Array.from({ length: 22 }, (_, i) => {
+  const o = orders[(i * 2) % orders.length]!;
+  return {
+    id: `RET-${5001 + i}`,
+    order: o.id,
+    customer: o.customer,
+    product: o.items[0]!.product.name,
+    vendor: o.items[0]!.vendor,
+    reason: pick(reasons, i),
+    amount: Math.round(o.amount * 0.6),
+    date: dt(i, 8),
+    status: pick(["Requested", "Approved", "Rejected", "Picked Up", "Completed"], i),
+    refund: pick(["Pending", "Processing", "Refunded", "Not Applicable"], i + 1),
+  };
+});
+
+const notifTemplates: Array<[string, string, string]> = [
+  ["New order received", "info", "%ORDER% was placed for %AMOUNT%."],
+  ["Payment received", "success", "%AMOUNT% received via UPI for %ORDER%."],
+  ["Low stock alert", "warning", "%PRODUCT% has dropped below the reorder level."],
+  ["New review submitted", "info", "A 5-star review was posted on %PRODUCT%."],
+  ["Refund requested", "warning", "A refund of %AMOUNT% was requested for %ORDER%."],
+  ["Order delivered", "success", "%ORDER% was delivered successfully."],
+  ["Vendor approval pending", "warning", "A vendor submitted KYC documents for review."],
+  ["New customer registered", "info", "A new buyer completed registration."],
 ];
+
+export const notifications = Array.from({ length: 34 }, (_, i) => {
+  const [title, type, body] = notifTemplates[i % notifTemplates.length]!;
+  const o = orders[i % orders.length]!;
+  const p = products[(i * 7) % products.length]!;
+  return {
+    id: i + 1,
+    role: (["admin", "vendor", "customer"] as const)[i % 3]!,
+    title,
+    type,
+    body: body.replace("%ORDER%", o.id).replace("%AMOUNT%", inr(o.amount)).replace("%PRODUCT%", p.name),
+    time: i < 3 ? `${10 + i * 9} min ago` : i < 9 ? `${i} hrs ago` : `${Math.ceil(i / 3)} days ago`,
+    read: i % 4 === 0,
+  };
+});
 
 export const salesSeries = [
+  { month: "Jan", revenue: 1120000, orders: 286, customers: 152 },
   { month: "Feb", revenue: 1240000, orders: 320, customers: 180 },
   { month: "Mar", revenue: 1480000, orders: 386, customers: 224 },
   { month: "Apr", revenue: 1320000, orders: 351, customers: 198 },
@@ -254,10 +463,24 @@ export const salesSeries = [
 
 export const categorySales = categories.map((c, i) => ({
   name: c.name,
-  value: [46, 24, 14, 16][i]!,
+  value: [22, 16, 13, 12, 9, 8, 7, 5, 4, 4][i] ?? 4,
 }));
 
 export const addresses = [
   { id: "A1", label: "Warehouse", name: "Rahul Deshpande", phone: "+91 98765 43210", line: "Plot 14, Industrial Estate", city: "Belagavi", state: "Karnataka", pin: "590010", landmark: "Near APMC Yard", default: true },
   { id: "A2", label: "Retail Store", name: "Rahul Deshpande", phone: "+91 98765 43210", line: "Shop 6, Market Road", city: "Hubballi", state: "Karnataka", pin: "580020", landmark: "Opp. Bus Stand", default: false },
 ];
+
+/* vendor rollups */
+for (const v of vendors) {
+  v.products = products.filter((p) => p.vendorId === v.id).length;
+  const subs = vendorSubOrders.filter((s) => s.vendorId === v.id);
+  v.orders = subs.length;
+  v.sales = subs.reduce((s, x) => s + x.amount, 0);
+}
+
+export const activity = orders.slice(0, 12).map((o, i) => ({
+  id: i,
+  text: `${o.customer} placed ${o.id} worth ${inr(o.amount)}`,
+  time: `${i + 1} hrs ago`,
+}));

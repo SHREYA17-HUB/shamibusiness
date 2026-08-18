@@ -23,10 +23,12 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as VendorDashboardRouteImport } from './routes/vendor.dashboard'
 import { Route as VendorLoginRouteImport } from './routes/vendor.login'
 import { Route as VendorRegisterRouteImport } from './routes/vendor.register'
+import { Route as AdminOrdersIdRouteImport } from './routes/admin.orders.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -98,6 +100,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/admin/orders',
+  path: '/admin/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
   path: '/product/$id',
@@ -118,6 +125,11 @@ const VendorRegisterRoute = VendorRegisterRouteImport.update({
   path: '/vendor/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminOrdersRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -134,10 +146,12 @@ export interface FileRoutesByFullPath {
   '/wishlist': typeof WishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/product/$id': typeof ProductIdRoute
   '/vendor/dashboard': typeof VendorDashboardRoute
   '/vendor/login': typeof VendorLoginRoute
   '/vendor/register': typeof VendorRegisterRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -154,10 +168,12 @@ export interface FileRoutesByTo {
   '/wishlist': typeof WishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/product/$id': typeof ProductIdRoute
   '/vendor/dashboard': typeof VendorDashboardRoute
   '/vendor/login': typeof VendorLoginRoute
   '/vendor/register': typeof VendorRegisterRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -175,10 +191,12 @@ export interface FileRoutesById {
   '/wishlist': typeof WishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/product/$id': typeof ProductIdRoute
   '/vendor/dashboard': typeof VendorDashboardRoute
   '/vendor/login': typeof VendorLoginRoute
   '/vendor/register': typeof VendorRegisterRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -197,10 +215,12 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/admin/orders'
     | '/product/$id'
     | '/vendor/dashboard'
     | '/vendor/login'
     | '/vendor/register'
+    | '/admin/orders/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -217,10 +237,12 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/admin/orders'
     | '/product/$id'
     | '/vendor/dashboard'
     | '/vendor/login'
     | '/vendor/register'
+    | '/admin/orders/$id'
   id:
     | '__root__'
     | '/'
@@ -237,10 +259,12 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/admin/orders'
     | '/product/$id'
     | '/vendor/dashboard'
     | '/vendor/login'
     | '/vendor/register'
+    | '/admin/orders/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -258,6 +282,7 @@ export interface RootRouteChildren {
   WishlistRoute: typeof WishlistRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
   ProductIdRoute: typeof ProductIdRoute
   VendorDashboardRoute: typeof VendorDashboardRoute
   VendorLoginRoute: typeof VendorLoginRoute
@@ -364,6 +389,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/admin/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$id': {
       id: '/product/$id'
       path: '/product/$id'
@@ -392,8 +424,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VendorRegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/orders/$id': {
+      id: '/admin/orders/$id'
+      path: '/$id'
+      fullPath: '/admin/orders/$id'
+      preLoaderRoute: typeof AdminOrdersIdRouteImport
+      parentRoute: typeof AdminOrdersRoute
+    }
   }
 }
+
+interface AdminOrdersRouteChildren {
+  AdminOrdersIdRoute: typeof AdminOrdersIdRoute
+}
+
+const AdminOrdersRouteChildren: AdminOrdersRouteChildren = {
+  AdminOrdersIdRoute: AdminOrdersIdRoute,
+}
+
+const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
+  AdminOrdersRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -410,6 +461,7 @@ const rootRouteChildren: RootRouteChildren = {
   WishlistRoute: WishlistRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminOrdersRoute: AdminOrdersRouteWithChildren,
   ProductIdRoute: ProductIdRoute,
   VendorDashboardRoute: VendorDashboardRoute,
   VendorLoginRoute: VendorLoginRoute,
