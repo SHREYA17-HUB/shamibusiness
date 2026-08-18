@@ -17,6 +17,11 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+const DEMO_ACCOUNTS: Record<string, { password: string; name: string }> = {
+  "rahul.d@gmail.com": { password: "demo1234", name: "Rahul Deshpande" },
+  "customer@example.com": { password: "demo123", name: "Customer Demo" },
+};
+
 function LoginPage() {
   const { login } = useApp();
   const navigate = useNavigate();
@@ -30,11 +35,17 @@ function LoginPage() {
       toast.error("Enter a valid email and a password of at least 6 characters");
       return;
     }
+    const account = DEMO_ACCOUNTS[email.trim().toLowerCase()];
+    if (!account || account.password !== password) {
+      toast.error("Invalid email or password", { description: "Use one of the demo credentials shown below." });
+      return;
+    }
     setLoading(true);
     setTimeout(() => {
-      login({ name: "Rahul Deshpande", email, role: "customer" });
-      toast.success("Welcome back");
+      login({ name: account.name, email, role: "customer" });
+      toast.success("Welcome back", { description: `Signed in as ${account.name}` });
       navigate({ to: "/account" });
+      setLoading(false);
     }, 700);
   };
 
@@ -57,6 +68,11 @@ function LoginPage() {
             <Link to="/admin/login" className="font-semibold text-navy hover:text-gold">
               Admin login
             </Link>
+          </div>
+          <div className="mt-4 rounded-md border border-dashed border-gold/50 bg-ivory p-3 text-xs text-slate">
+            <p className="font-semibold text-navy">Demo credentials</p>
+            <p>rahul.d@gmail.com / demo1234</p>
+            <p>customer@example.com / demo123</p>
           </div>
         </>
       }
