@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { Boxes, IndianRupee, Package, Percent } from "lucide-react";
 import { PanelLayout } from "@/components/panel/PanelLayout";
 import { DataTable, Panel, StatCard, StatusBadge } from "@/components/panel/widgets";
 import { adminNav } from "@/lib/panel-nav";
@@ -47,10 +48,10 @@ function AdminVendorDetail() {
       <Link to="/admin/vendors" className="mb-4 inline-block text-sm font-semibold text-navy hover:text-gold">← Back to Vendors</Link>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total Sales" value={inr(vendor.sales)} highlight />
-        <StatCard label="Products Listed" value={String(vProducts.length)} />
-        <StatCard label="Orders Fulfilled" value={String(vOrders.length)} />
-        <StatCard label="Commission Rate" value={`${vendor.commission}%`} />
+        <StatCard label="Total Sales" value={inr(vendor.sales)} icon={IndianRupee} highlight />
+        <StatCard label="Products Listed" value={String(vProducts.length)} icon={Boxes} />
+        <StatCard label="Orders Fulfilled" value={String(vOrders.length)} icon={Package} />
+        <StatCard label="Commission Rate" value={`${vendor.commission}%`} icon={Percent} />
       </div>
 
       <Panel
