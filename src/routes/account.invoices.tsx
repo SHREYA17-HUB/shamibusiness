@@ -26,7 +26,7 @@ function AccountInvoices() {
   const mine = user ? orders.filter((o) => o.email === user.email) : [];
   const list = mine.length ? mine : orders.slice(0, 12);
   const total = list.reduce((s, o) => s + o.amount, 0);
-  const gst = list.reduce((s, o) => s + (o.gst ?? Math.round(o.amount * 0.05)), 0);
+  const gst = list.reduce((s, o) => s + o.tax, 0);
 
   return (
     <PanelLayout items={accountNav} tone="customer" title="Invoices" subtitle="GST invoices for your orders">
@@ -46,7 +46,7 @@ function AccountInvoices() {
             </Link>,
             o.date,
             inr(o.amount),
-            inr(o.gst ?? Math.round(o.amount * 0.05)),
+            inr(o.tax),
             <StatusBadge status={o.payment} />,
             <Button variant="outline" size="sm" onClick={() => toast.success(`Invoice for ${o.id} downloaded`)}>
               Download
