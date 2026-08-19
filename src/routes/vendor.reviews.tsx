@@ -130,7 +130,10 @@ function VendorReviews() {
               className="bg-navy text-white hover:bg-navy/90"
               onClick={() => {
                 if (!replying) return;
-                if (!reply.trim()) return toast.error("Reply cannot be empty");
+                if (!reply.trim()) {
+                  toast.error("Reply cannot be empty");
+                  return;
+                }
                 setReplies((r) => ({ ...r, [replying.id]: reply.trim() }));
                 toast.success(`Reply posted for ${replying.customer}'s review`);
                 setReplying(null);
