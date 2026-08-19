@@ -122,8 +122,14 @@ function VendorEarnings() {
               className="bg-navy text-white hover:bg-navy/90"
               onClick={() => {
                 const val = Number(amount);
-                if (!val || val <= 0) return toast.error("Enter a valid amount");
-                if (val > availableEarnings) return toast.error("Amount exceeds your available earnings");
+                if (!val || val <= 0) {
+                  toast.error("Enter a valid amount");
+                  return;
+                }
+                if (val > availableEarnings) {
+                  toast.error("Amount exceeds your available earnings");
+                  return;
+                }
                 toast.success(`Withdrawal request of ${inr(val)} submitted`);
                 setOpen(false);
                 setAmount("");

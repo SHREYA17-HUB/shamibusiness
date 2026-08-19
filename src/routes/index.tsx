@@ -4,9 +4,13 @@ import {
   Bean,
   BadgeCheck,
   Candy,
+  Coffee,
   Droplets,
+  Flame,
   Headset,
+  Nut,
   ShieldCheck,
+  Sparkles,
   Truck,
   Wheat,
 } from "lucide-react";
@@ -34,7 +38,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const catIcons = { Candy, Wheat, Droplets, Bean } as const;
+const catIcons = { Candy, Wheat, Droplets, Bean, Flame, Nut, Coffee, Sparkles } as const;
 
 function Index() {
   return (
@@ -142,7 +146,7 @@ function Index() {
         />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((c) => {
-            const Icon = catIcons[c.icon as keyof typeof catIcons];
+            const Icon = catIcons[c.icon as keyof typeof catIcons] ?? Candy;
             return (
               <Link
                 key={c.name}
