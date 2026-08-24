@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Heart, Menu, Search, ShoppingCart, User, Phone, X } from "lucide-react";
+import { Heart, Menu, Search, ShoppingCart, User, X } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/brand/Logo";
 import { useApp } from "@/lib/store";
@@ -31,10 +31,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full">
       <div className="hidden bg-midnight text-[13px] text-white/70 md:block">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
-          <p className="flex items-center gap-2">
-            <Phone className="h-3.5 w-3.5 text-gold" /> +91 98450 11223 · Bulk & institutional supply
-          </p>
+        <div className="mx-auto flex max-w-7xl items-center justify-end px-6 py-2">
           <div className="flex items-center gap-5">
             <Link to="/vendor/login" className="transition-colors hover:text-gold">
               Vendor Panel
@@ -57,7 +54,7 @@ export function SiteHeader() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && submit()}
-              placeholder="Search sugar, rice, oils, pulses, SKU or vendor…"
+              placeholder="Search S1 sugar, SKU or vendor…"
               className="h-11 rounded-full border-white/15 bg-white pl-10 text-charcoal"
             />
             {suggestions.length > 0 && (
