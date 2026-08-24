@@ -57,6 +57,9 @@ function AdminProducts() {
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState(emptyForm());
 
+  const [quickOpen, setQuickOpen] = useState(false);
+  const [quickForm, setQuickForm] = useState({ name: "", qty: "", price: "" });
+
   const [editing, setEditing] = useState<Product | null>(null);
   const [editForm, setEditForm] = useState({ name: "", mrp: "", price: "", gst: "", stock: "" });
 
@@ -88,6 +91,53 @@ function AdminProducts() {
 
   const lowStock = products.filter((p) => p.stock > 0 && p.stock < 30).length;
   const outStock = products.filter((p) => p.stock === 0).length;
+
+  const submitQuickAdd = () => {
+    if (!quickForm.name.trim() || !quickForm.qty) {
+      toast.error("Enter item name and quantity");
+      return;
+    }
+    const qty = Number(quickForm.qty);
+    if (Number.isNaN(qty) || qty < 0) {
+      toast.error("Enter a valid quantity");
+      return;
+    }
+    const price = Number(quickForm.price) || 0;
+    const vendor = vendors[0]!;
+    const stamp = Date.now().toString().slice(-6);
+    const dateStr = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+    const item: Product = {
+      id: `P${stamp}`,
+      name: quickForm.name.trim(),
+      sku: `SBV-SU-${stamp}`,
+      brand: "Shami Select",
+      vendor: vendor.business,
+      vendorId: vendor.id,
+      category: "Sugar",
+      subcategory: "S1 Sugar",
+      image: products[0]!.image,
+      mrp: price,
+      price,
+      gst: 5,
+      rating: 0,
+      reviews: 0,
+      stock: qty,
+      reserved: 0,
+      sold: 0,
+      weight: "1 unit",
+      status: "approved",
+      active: true,
+      tags: [],
+      description: "Manually added by admin.",
+      specs: [{ label: "Brand", value: "Shami Select" }],
+      created: dateStr,
+      updated: dateStr,
+    };
+    addProduct(item);
+    toast.success(`${item.name} added with ${qty} units`);
+    setQuickForm({ name: "", qty: "", price: "" });
+    setQuickOpen(false);
+  };
 
   const submitAdd = () => {
     if (!form.name.trim() || !form.mrp || !form.price) {
@@ -176,6 +226,34 @@ function AdminProducts() {
                 <SelectItem value="stock-asc">Stock: Low to High</SelectItem>
               </SelectContent>
             </Select>
+            <Dialog open={quickOpen} onOpenChange={setQuickOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline">Add Item Manually</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle>Add Item Manually</DialogTitle></DialogHeader>
+                <div className="space-y-3">
+                  <div>
+                    <Label>Item Name</Label>
+                    <Input value={quickForm.name} onChange={(e) => setQuickForm({ ...quickForm, name: e.target.value })} placeholder="e.g. S1 Sugar 50kg Bag" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Quantity</Label>
+                      <Input type="number" min={0} value={quickForm.qty} onChange={(e) => setQuickForm({ ...quickForm, qty: e.target.value })} />
+                    </div>
+                    <div>
+                      <Label>Price (optional)</Label>
+                      <Input type="number" min={0} value={quickForm.price} onChange={(e) => setQuickForm({ ...quickForm, price: e.target.value })} />
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setQuickOpen(false)}>Cancel</Button>
+                  <Button onClick={submitQuickAdd}>Save Item</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <Dialog open={addOpen} onOpenChange={setAddOpen}>
               <DialogTrigger asChild>
                 <Button size="sm">Add Product</Button>
