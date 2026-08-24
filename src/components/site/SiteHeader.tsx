@@ -20,7 +20,9 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const navigate = useNavigate();
-  const suggestions = q.length > 1 ? products.filter((p) => p.name.toLowerCase().includes(q.toLowerCase())).slice(0, 5) : [];
+  const suggestions = q.length > 1
+    ? products.filter((p) => isStorefrontProduct(p) && p.name.toLowerCase().includes(q.toLowerCase())).slice(0, 5)
+    : [];
 
   const submit = () => {
     navigate({ to: "/shop", search: { q } });
