@@ -32,7 +32,7 @@ function Categories() {
 
       <div className="mx-auto max-w-7xl space-y-14 px-6 py-12">
         {categories.map((c) => {
-          const Icon = icons[c.icon as keyof typeof icons];
+          const Icon = icons[c.icon as keyof typeof icons] ?? Candy;
           const items = products.filter((p) => p.category === c.name).slice(0, 4);
           return (
             <section key={c.name}>
