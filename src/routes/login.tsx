@@ -2,57 +2,48 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AuthCard } from "@/components/site/AuthCard";
+import { OtpVerifyStep } from "@/components/site/OtpForm";
 import { Input } from "@/components/ui/input";
+import { useEmailOtp } from "@/lib/otp";
 import { useApp } from "@/lib/store";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Customer Login | Shami Business Ventures" },
-      { name: "description", content: "Sign in to track orders, manage addresses and download GST invoices." },
+      { name: "description", content: "Sign in with an email OTP to track orders, manage addresses and download GST invoices." },
       { property: "og:title", content: "Customer Login | Shami" },
-      { property: "og:description", content: "Access your Shami marketplace account." },
+      { property: "og:description", content: "Access your Shami marketplace account with email OTP verification." },
     ],
   }),
   component: LoginPage,
 });
 
-const DEMO_ACCOUNTS: Record<string, { password: string; name: string }> = {
-  "rahul.d@gmail.com": { password: "demo1234", name: "Rahul Deshpande" },
-  "customer@example.com": { password: "demo123", name: "Customer Demo" },
+const KNOWN_NAMES: Record<string, string> = {
+  "rahul.d@gmail.com": "Rahul Deshpande",
+  "customer@example.com": "Customer Demo",
 };
 
 function LoginPage() {
   const { login } = useApp();
   const navigate = useNavigate();
   const [email, setEmail] = useState("rahul.d@gmail.com");
-  const [password, setPassword] = useState("demo1234");
-  const [loading, setLoading] = useState(false);
+  const otp = useEmailOtp();
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.includes("@") || password.length < 6) {
-      toast.error("Enter a valid email and a password of at least 6 characters");
-      return;
-    }
-    const account = DEMO_ACCOUNTS[email.trim().toLowerCase()];
-    if (!account || account.password !== password) {
-      toast.error("Invalid email or password", { description: "Use one of the demo credentials shown below." });
-      return;
-    }
-    setLoading(true);
-    setTimeout(() => {
-      login({ name: account.name, email, role: "customer" });
-      toast.success("Welcome back", { description: `Signed in as ${account.name}` });
-      navigate({ to: "/account" });
-      setLoading(false);
-    }, 700);
+  const finish = async () => {
+    const ok = await otp.verify();
+    if (!ok) return;
+    const clean = email.trim().toLowerCase();
+    const name = KNOWN_NAMES[clean] ?? clean.split("@")[0]!.replace(/[._]/g, " ");
+    login({ name, email: clean, role: "customer" });
+    toast.success("Email verified", { description: `Signed in as ${name}` });
+    navigate({ to: "/account" });
   };
 
   return (
     <AuthCard
       title="Customer Login"
-      subtitle="Sign in to your Shami marketplace account"
+      subtitle="Verify your email with a one-time code to sign in"
       footer={
         <>
           New to Shami?{" "}
@@ -69,30 +60,34 @@ function LoginPage() {
               Admin login
             </Link>
           </div>
-          <div className="mt-4 rounded-md border border-dashed border-gold/50 bg-ivory p-3 text-xs text-slate">
-            <p className="font-semibold text-navy">Demo credentials</p>
-            <p>rahul.d@gmail.com / demo1234</p>
-            <p>customer@example.com / demo123</p>
-          </div>
         </>
       }
     >
-      <form onSubmit={submit} className="space-y-4">
-        <label className="block">
-          <span className="mb-1.5 block text-xs font-semibold text-charcoal">Email</span>
-          <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-        <label className="block">
-          <span className="mb-1.5 block text-xs font-semibold text-charcoal">Password</span>
-          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </label>
-        <button
-          disabled={loading}
-          className="w-full rounded-md bg-navy py-3 text-sm font-semibold text-white transition-colors hover:bg-midnight disabled:opacity-60"
+      {otp.stage === "request" ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void otp.send(email.trim());
+          }}
+          className="space-y-4"
         >
-          {loading ? "Signing in…" : "Sign In"}
-        </button>
-      </form>
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-semibold text-charcoal">Email</span>
+            <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email" />
+          </label>
+          <button
+            disabled={otp.sending}
+            className="w-full rounded-md bg-navy py-3 text-sm font-semibold text-white transition-colors hover:bg-midnight disabled:opacity-60"
+          >
+            {otp.sending ? "Sending code…" : "Send OTP"}
+          </button>
+          <p className="text-xs text-slate">
+            We'll email a 6-digit code to verify it's you. No password required.
+          </p>
+        </form>
+      ) : (
+        <OtpVerifyStep email={email.trim()} otp={otp} submitLabel="Verify & Sign In" onSubmit={() => void finish()} />
+      )}
     </AuthCard>
   );
 }

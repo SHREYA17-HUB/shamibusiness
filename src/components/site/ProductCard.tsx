@@ -59,8 +59,6 @@ export function ProductCard({ product }: { product: Product }) {
             <Star className="h-3.5 w-3.5 fill-gold" /> {product.rating}
           </span>
           <span>({product.reviews})</span>
-          <span className="text-border">·</span>
-          <span>{product.weight}</span>
         </div>
 
         <div className="mt-3 flex flex-wrap items-baseline gap-2">
@@ -69,9 +67,7 @@ export function ProductCard({ product }: { product: Product }) {
           {off > 0 && <span className="text-xs font-semibold text-gold">Save {inr(product.mrp - product.price)}</span>}
         </div>
 
-        <p className={cn("mt-1 text-xs font-medium", product.stock > 0 ? "text-success" : "text-danger")}>
-          {product.stock > 0 ? `In stock · ${product.stock} units` : "Out of stock"}
-        </p>
+        {product.stock === 0 && <p className="mt-1 text-xs font-medium text-danger">Currently unavailable</p>}
 
         <div className="mt-4 flex gap-2 pt-1">
           <button
