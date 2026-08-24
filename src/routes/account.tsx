@@ -3,7 +3,7 @@ import { Bell, Gift, Heart, Package, ShoppingCart, Sparkles, Star, Truck, Wallet
 import { PanelLayout } from "@/components/panel/PanelLayout";
 import { DataTable, Panel, StatCard, StatusBadge } from "@/components/panel/widgets";
 import { accountNav } from "@/lib/account-nav";
-import { inr, orderStages } from "@/lib/data";
+import { inr, isStorefrontProduct, orderStages } from "@/lib/data";
 import { useApp } from "@/lib/store";
 
 export const Route = createFileRoute("/account")({
@@ -29,9 +29,9 @@ function Account() {
   const totalSpend = ordersList.reduce((s, o) => s + o.amount, 0);
   const activeDeliveries = ordersList.filter((o) => o.status !== "Delivered" && o.status !== "Cancelled").length;
   const myReviews = user ? reviews.filter((r) => r.customerId === user.email || r.customer === user.name) : reviews.slice(0, 3);
-  const wishItems = products.filter((p) => wishlist.includes(p.id)).slice(0, 4);
+  const wishItems = products.filter((p) => wishlist.includes(p.id) && isStorefrontProduct(p)).slice(0, 4);
   const myNotifs = notifications.filter((n) => n.role === "customer").slice(0, 4);
-  const recommended = products.filter((p) => p.tags.includes("recommended")).slice(0, 4);
+  const recommended = products.filter((p) => p.tags.includes("recommended") && isStorefrontProduct(p)).slice(0, 4);
   const activeCoupons = coupons.filter((c) => c.status === "Active").slice(0, 3);
 
   return (
