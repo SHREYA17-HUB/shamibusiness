@@ -3,22 +3,22 @@ import { Ticket } from "lucide-react";
 import { toast } from "sonner";
 import { SiteLayout, Breadcrumbs, SectionHeading } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { coupons, inr, products } from "@/lib/data";
+import { coupons, inr, isStorefrontProduct, products } from "@/lib/data";
 
 export const Route = createFileRoute("/offers")({
   head: () => ({
     meta: [
       { title: "Offers & Coupons | Shami Business Ventures" },
-      { name: "description", content: "Live coupon codes and discounted sugar, rice, oil and pulses deals." },
+      { name: "description", content: "Live coupon codes and discounted S1 sugar deals." },
       { property: "og:title", content: "Live Offers & Coupons | Shami" },
-      { property: "og:description", content: "Save more on bulk sugar and grocery orders with active coupons." },
+      { property: "og:description", content: "Save more on bulk S1 sugar orders with active coupons." },
     ],
   }),
   component: Offers,
 });
 
 function Offers() {
-  const deals = products.filter((p) => p.mrp - p.price > 0).slice(0, 8);
+  const deals = products.filter((p) => p.mrp - p.price > 0 && isStorefrontProduct(p)).slice(0, 8);
   return (
     <SiteLayout>
       <div className="border-b border-border bg-ivory">

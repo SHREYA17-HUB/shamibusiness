@@ -57,12 +57,15 @@ export const categories = [
   { name: "Salt & Sweeteners", icon: "Sparkles", subs: ["Iodised Salt", "Rock Salt"], count: 11 },
 ];
 
-/* Storefront visibility: customers currently only see Sugar. */
-export const STOREFRONT_CATEGORIES = ["Sugar"];
-export const storefrontCategories = categories.filter((c) => STOREFRONT_CATEGORIES.includes(c.name));
+/* Storefront visibility: customers currently only see S1 Sugar. */
+export const STOREFRONT_SUBCATEGORIES = ["S1 Sugar"];
+export const storefrontCategories = categories
+  .filter((c) => c.name === "Sugar")
+  .map((c) => ({ ...c, subs: c.subs.filter((s) => STOREFRONT_SUBCATEGORIES.includes(s)) }));
 export const isStorefrontCategory = (name: string) =>
-  STOREFRONT_CATEGORIES.includes(name) ||
-  storefrontCategories.some((c) => c.subs.includes(name));
+  storefrontCategories.some((c) => c.name === name || c.subs.includes(name));
+export const isStorefrontProduct = (p: Product) =>
+  p.status === "approved" && p.category === "Sugar" && STOREFRONT_SUBCATEGORIES.includes(p.subcategory);
 
 const catImage: Record<string, string> = {
   Sugar: sugarImg, Rice: riceImg, Oils: oilImg, Pulses: dalImg,
@@ -201,7 +204,7 @@ export const products: Product[] = productSeed.map(([name, category, subcategory
 });
 
 export const byTag = (tag: Product["tags"][number]) =>
-  products.filter((p) => p.tags.includes(tag) && isStorefrontCategory(p.category)).slice(0, 8);
+  products.filter((p) => p.tags.includes(tag) && isStorefrontProduct(p)).slice(0, 8);
 
 /* ---------- customers (32) ---------- */
 const firstNames = ["Rahul", "Sneha", "Mohammed", "Priya", "Anand", "Kavya", "Vishal", "Deepa", "Arjun", "Nisha", "Rohit", "Meena", "Sanjay", "Pooja", "Karthik", "Divya", "Imtiaz", "Lakshmi", "Naveen", "Shalini", "Ganesh", "Ritu", "Manoj", "Anjali", "Sameer", "Harini", "Tarun", "Bhavna", "Yusuf", "Ashwini", "Nitin", "Swati"];

@@ -2,14 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 import { SiteLayout, Breadcrumbs } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { products } from "@/lib/data";
+import { isStorefrontProduct, products } from "@/lib/data";
 import { useApp } from "@/lib/store";
 
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
       { title: "My Wishlist | Shami Business Ventures" },
-      { name: "description", content: "Saved sugar, rice, oil and pulses products in your Shami wishlist." },
+      { name: "description", content: "Saved S1 sugar products in your Shami wishlist." },
       { property: "og:title", content: "My Wishlist | Shami" },
       { property: "og:description", content: "Products you saved for later." },
     ],
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/wishlist")({
 
 function Wishlist() {
   const { wishlist } = useApp();
-  const items = products.filter((p) => wishlist.includes(p.id));
+  const items = products.filter((p) => wishlist.includes(p.id) && isStorefrontProduct(p));
   return (
     <SiteLayout>
       <div className="border-b border-border bg-ivory">

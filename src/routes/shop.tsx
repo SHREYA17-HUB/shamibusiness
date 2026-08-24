@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { LayoutGrid, List, Search, SlidersHorizontal } from "lucide-react";
 import { SiteLayout, Breadcrumbs } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { inr, isStorefrontCategory, storefrontCategories, vendors } from "@/lib/data";
+import { inr, isStorefrontProduct, storefrontCategories, vendors } from "@/lib/data";
 import { useApp } from "@/lib/store";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,14 +20,14 @@ export const Route = createFileRoute("/shop")({
   }),
   head: () => ({
     meta: [
-      { title: "Shop Sugar, Rice, Oils & Pulses | Shami Business Ventures" },
+      { title: "Shop S1 Sugar | Shami Business Ventures" },
       {
         name: "description",
         content:
-          "Browse the full Shami catalogue with vendor, price, rating and availability filters. Bulk and retail packs available.",
+          "Browse premium S1 refined sugar bags and retail packs from verified mills. GST invoicing and pan-India delivery.",
       },
-      { property: "og:title", content: "Shop the Shami Catalogue" },
-      { property: "og:description", content: "Filter by category, vendor, price and rating across 120+ SKUs." },
+      { property: "og:title", content: "Shop S1 Sugar | Shami Business Ventures" },
+      { property: "og:description", content: "Filter by price, vendor and rating across S1 sugar SKUs." },
     ],
   }),
   component: Shop,
@@ -52,7 +52,7 @@ function Shop() {
   const perPage = 8;
 
   const filtered = useMemo(() => {
-    let list = products.filter((p) => p.status === "approved" && isStorefrontCategory(p.category));
+    let list = products.filter((p) => isStorefrontProduct(p));
     if (q) {
       const t = q.toLowerCase();
       list = list.filter(

@@ -1,18 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bean, Candy, Coffee, Droplets, Droplet, Flame, Nut, Sparkles, Wheat } from "lucide-react";
 import { SiteLayout, Breadcrumbs, SectionHeading } from "@/components/site/SiteLayout";
-import { storefrontCategories, products } from "@/lib/data";
+import { storefrontCategories, isStorefrontProduct, products } from "@/lib/data";
 
 export const Route = createFileRoute("/categories")({
   head: () => ({
     meta: [
-      { title: "Product Categories — Sugar, Rice, Oils, Pulses | Shami" },
+      { title: "S1 Sugar Categories | Shami Business Ventures" },
       {
         name: "description",
-        content: "Explore S1, S2 and M30 sugar, raw and steam rice, sunflower oils and premium pulses.",
+        content: "Explore S1 refined sugar categories — bulk bags, retail packs and specialty grades from verified mills.",
       },
-      { property: "og:title", content: "Product Categories | Shami Business Ventures" },
-      { property: "og:description", content: "Every category in the Shami marketplace with live product counts." },
+      { property: "og:title", content: "S1 Sugar Categories | Shami Business Ventures" },
+      { property: "og:description", content: "S1 sugar catalogue with live product counts and variants." },
     ],
   }),
   component: Categories,
@@ -26,14 +26,14 @@ function Categories() {
       <div className="border-b border-border bg-ivory">
         <div className="mx-auto max-w-7xl px-6 py-8">
           <Breadcrumbs items={[{ label: "Categories" }]} />
-          <h1 className="mt-3 text-3xl font-bold text-navy">All Categories</h1>
+          <h1 className="mt-3 text-3xl font-bold text-navy">S1 Sugar Categories</h1>
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl space-y-14 px-6 py-12">
         {storefrontCategories.map((c) => {
           const Icon = icons[c.icon as keyof typeof icons] ?? Candy;
-          const items = products.filter((p) => p.category === c.name).slice(0, 4);
+          const items = products.filter((p) => p.category === c.name && isStorefrontProduct(p)).slice(0, 4);
           return (
             <section key={c.name}>
               <SectionHeading

@@ -4,7 +4,7 @@ import { Heart, Minus, Plus, ShieldCheck, Star, Truck, Store } from "lucide-reac
 import { toast } from "sonner";
 import { SiteLayout, Breadcrumbs, SectionHeading } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { inr, products, reviews, vendors } from "@/lib/data";
+import { inr, isStorefrontProduct, products, reviews, vendors } from "@/lib/data";
 import { useApp } from "@/lib/store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ function ProductDetail() {
   const vendor = vendors.find((v) => v.id === product.vendorId)!;
   const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
   const gallery = [product.image, product.image, product.image];
-  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const related = products.filter((p) => isStorefrontProduct(p) && p.id !== product.id).slice(0, 4);
 
   return (
     <SiteLayout>
