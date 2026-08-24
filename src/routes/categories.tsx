@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bean, Candy, Droplets, Droplet, Wheat } from "lucide-react";
+import { Bean, Candy, Coffee, Droplets, Droplet, Flame, Nut, Sparkles, Wheat } from "lucide-react";
 import { SiteLayout, Breadcrumbs, SectionHeading } from "@/components/site/SiteLayout";
 import { categories, products } from "@/lib/data";
 
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/categories")({
   component: Categories,
 });
 
-const icons = { Candy, Wheat, Droplets, Bean, Droplet } as const;
+const icons = { Candy, Wheat, Droplets, Bean, Droplet, Flame, Nut, Coffee, Sparkles } as const;
 
 function Categories() {
   return (
@@ -32,7 +32,7 @@ function Categories() {
 
       <div className="mx-auto max-w-7xl space-y-14 px-6 py-12">
         {categories.map((c) => {
-          const Icon = icons[c.icon as keyof typeof icons];
+          const Icon = icons[c.icon as keyof typeof icons] ?? Candy;
           const items = products.filter((p) => p.category === c.name).slice(0, 4);
           return (
             <section key={c.name}>
