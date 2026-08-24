@@ -16,22 +16,22 @@ import {
 } from "lucide-react";
 import { SiteLayout, SectionHeading } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { byTag, isStorefrontCategory, products, storefrontCategories } from "@/lib/data";
+import { byTag, isStorefrontProduct, products, storefrontCategories } from "@/lib/data";
 import heroImg from "@/assets/hero-sugar.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Shami Business Ventures — Premium Sugar & Grocery Marketplace" },
+      { title: "Shami Business Ventures — Premium S1 Sugar Marketplace" },
       {
         name: "description",
         content:
-          "Buy S1, S2 and M30 sugar, rice, oils and pulses from verified vendors. Bulk and retail supply with GST invoicing by Shami Business Ventures Pvt. Ltd.",
+          "Buy premium S1 refined sugar from verified mills. Bulk bags, retail packs, GST invoicing and pan-India delivery by Shami Business Ventures Pvt. Ltd.",
       },
-      { property: "og:title", content: "Premium Sugar & Grocery Marketplace | Shami Business Ventures" },
+      { property: "og:title", content: "Premium S1 Sugar Marketplace | Shami Business Ventures" },
       {
         property: "og:description",
-        content: "Quality essentials delivered to your door from trusted mills and vendors.",
+        content: "Quality S1 sugar delivered to your door from trusted mills.",
       },
     ],
   }),
@@ -53,12 +53,12 @@ function Index() {
               Shami Business Ventures Pvt. Ltd.
             </span>
             <h1 className="mt-6 text-4xl leading-[1.08] font-extrabold text-white sm:text-5xl lg:text-6xl">
-              Quality Essentials <br />
+              Premium S1 Sugar <br />
               Delivered to <span className="text-gold-gradient">Your Door</span>
             </h1>
             <p className="mt-5 max-w-lg text-base leading-relaxed text-white/70">
-              Shop premium sugar and everyday essentials from trusted sellers. Mill-direct sourcing, batch
-              traceability and GST-compliant invoicing for retail and institutional buyers.
+              Shop S1 refined sugar directly from certified mills. Batch traceability, moisture-controlled packaging
+              and GST-compliant invoicing for retail and institutional buyers.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -137,7 +137,7 @@ function Index() {
       <section className="mx-auto max-w-7xl px-6 py-16">
         <SectionHeading
           eyebrow="Browse the catalogue"
-          title="Shop by Category"
+          title="Shop S1 Sugar"
           action={
             <Link to="/categories" className="hidden text-sm font-semibold text-navy hover:text-gold sm:block">
               View all
@@ -200,7 +200,7 @@ function Index() {
 
       <ProductRow eyebrow="Picked for you" title="Recommended Products" items={byTag("recommended")} />
       <section className="bg-ivory">
-        <ProductRow eyebrow="Continue where you left" title="Recently Viewed" items={products.filter((p) => isStorefrontCategory(p.category)).slice(0, 4)} />
+        <ProductRow eyebrow="Continue where you left" title="Recently Viewed" items={products.filter((p) => isStorefrontProduct(p)).slice(0, 4)} />
       </section>
     </SiteLayout>
   );
