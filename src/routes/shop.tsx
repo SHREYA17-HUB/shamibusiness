@@ -46,6 +46,7 @@ function Shop() {
   const [sort, setSort] = useState(search.sort ?? "Popular");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const perPage = 8;
 
   const filtered = useMemo(() => {
@@ -83,17 +84,31 @@ function Shop() {
   return (
     <SiteLayout>
       <div className="border-b border-border bg-ivory">
-        <div className="mx-auto max-w-7xl px-6 py-8">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
           <Breadcrumbs items={[{ label: "Shop" }]} />
-          <h1 className="mt-3 text-3xl font-bold text-navy">Shop All Products</h1>
+          <h1 className="mt-3 text-2xl font-bold text-navy sm:text-3xl">Shop All Products</h1>
           <p className="mt-2 text-sm text-slate">
             {filtered.length} products from {vendors.filter((v) => v.status === "approved").length} verified vendors
           </p>
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="h-max rounded-lg border border-border bg-card p-5 shadow-card lg:sticky lg:top-40">
+      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:hidden">
+        <button
+          onClick={() => setFiltersOpen((v) => !v)}
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-border bg-card py-2.5 text-sm font-semibold text-navy"
+        >
+          <SlidersHorizontal className="h-4 w-4 text-gold" /> {filtersOpen ? "Hide Filters" : "Show Filters"}
+        </button>
+      </div>
+
+      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8 lg:py-10">
+        <aside
+          className={cn(
+            "h-max rounded-lg border border-border bg-card p-5 shadow-card lg:sticky lg:top-40 lg:block",
+            !filtersOpen && "hidden",
+          )}
+        >
           <h2 className="flex items-center gap-2 text-sm font-bold tracking-wide text-navy uppercase">
             <SlidersHorizontal className="h-4 w-4 text-gold" /> Filters
           </h2>
@@ -142,7 +157,7 @@ function Shop() {
 
         <div className="min-w-0">
           <div className="mb-6 flex flex-wrap items-center gap-3">
-            <div className="relative min-w-0 flex-1">
+            <div className="relative min-w-0 flex-1 basis-full sm:basis-auto">
               <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate" />
               <Input
                 value={q}
@@ -157,7 +172,7 @@ function Shop() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="h-11 rounded-md border border-border bg-card px-3 text-sm font-medium text-navy"
+              className="h-11 w-full rounded-md border border-border bg-card px-3 text-sm font-medium text-navy sm:w-auto"
             >
               {sorts.map((s) => (
                 <option key={s}>{s}</option>
@@ -183,7 +198,7 @@ function Shop() {
               <p className="text-sm text-slate">Try widening the price range or clearing category filters.</p>
             </div>
           ) : (
-            <div className={cn("grid gap-5", view === "grid" ? "sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1")}>
+            <div className={cn("grid gap-5", view === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1")}>
               {current.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
