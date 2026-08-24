@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Logo } from "@/components/brand/Logo";
 import { useApp } from "@/lib/store";
 import { Input } from "@/components/ui/input";
-import { products } from "@/lib/data";
+import { isStorefrontProduct, products } from "@/lib/data";
 
 const nav = [
   { label: "Home", to: "/" },
