@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bean, Candy, Droplets, Droplet, Wheat } from "lucide-react";
+import { Bean, Candy, Coffee, Droplets, Droplet, Flame, Nut, Sparkles, Wheat } from "lucide-react";
 import { SiteLayout, Breadcrumbs, SectionHeading } from "@/components/site/SiteLayout";
 import { categories, products } from "@/lib/data";
 
