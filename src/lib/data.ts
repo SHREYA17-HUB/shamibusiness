@@ -57,6 +57,13 @@ export const categories = [
   { name: "Salt & Sweeteners", icon: "Sparkles", subs: ["Iodised Salt", "Rock Salt"], count: 11 },
 ];
 
+/* Storefront visibility: customers currently only see Sugar. */
+export const STOREFRONT_CATEGORIES = ["Sugar"];
+export const storefrontCategories = categories.filter((c) => STOREFRONT_CATEGORIES.includes(c.name));
+export const isStorefrontCategory = (name: string) =>
+  STOREFRONT_CATEGORIES.includes(name) ||
+  storefrontCategories.some((c) => c.subs.includes(name));
+
 const catImage: Record<string, string> = {
   Sugar: sugarImg, Rice: riceImg, Oils: oilImg, Pulses: dalImg,
   Flours: riceImg, Spices: dalImg, "Dry Fruits": dalImg,
