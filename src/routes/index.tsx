@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { SiteLayout, SectionHeading } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { byTag, categories, products } from "@/lib/data";
+import { byTag, isStorefrontCategory, products, storefrontCategories } from "@/lib/data";
 import heroImg from "@/assets/hero-sugar.jpg";
 
 export const Route = createFileRoute("/")({
@@ -145,7 +145,7 @@ function Index() {
           }
         />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((c) => {
+          {storefrontCategories.map((c) => {
             const Icon = catIcons[c.icon as keyof typeof catIcons] ?? Candy;
             return (
               <Link
@@ -200,7 +200,7 @@ function Index() {
 
       <ProductRow eyebrow="Picked for you" title="Recommended Products" items={byTag("recommended")} />
       <section className="bg-ivory">
-        <ProductRow eyebrow="Continue where you left" title="Recently Viewed" items={products.slice(2, 6)} />
+        <ProductRow eyebrow="Continue where you left" title="Recently Viewed" items={products.filter((p) => isStorefrontCategory(p.category)).slice(0, 4)} />
       </section>
     </SiteLayout>
   );

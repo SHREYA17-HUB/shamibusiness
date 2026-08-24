@@ -57,6 +57,13 @@ export const categories = [
   { name: "Salt & Sweeteners", icon: "Sparkles", subs: ["Iodised Salt", "Rock Salt"], count: 11 },
 ];
 
+/* Storefront visibility: customers currently only see Sugar. */
+export const STOREFRONT_CATEGORIES = ["Sugar"];
+export const storefrontCategories = categories.filter((c) => STOREFRONT_CATEGORIES.includes(c.name));
+export const isStorefrontCategory = (name: string) =>
+  STOREFRONT_CATEGORIES.includes(name) ||
+  storefrontCategories.some((c) => c.subs.includes(name));
+
 const catImage: Record<string, string> = {
   Sugar: sugarImg, Rice: riceImg, Oils: oilImg, Pulses: dalImg,
   Flours: riceImg, Spices: dalImg, "Dry Fruits": dalImg,
@@ -194,7 +201,7 @@ export const products: Product[] = productSeed.map(([name, category, subcategory
 });
 
 export const byTag = (tag: Product["tags"][number]) =>
-  products.filter((p) => p.tags.includes(tag)).slice(0, 8);
+  products.filter((p) => p.tags.includes(tag) && isStorefrontCategory(p.category)).slice(0, 8);
 
 /* ---------- customers (32) ---------- */
 const firstNames = ["Rahul", "Sneha", "Mohammed", "Priya", "Anand", "Kavya", "Vishal", "Deepa", "Arjun", "Nisha", "Rohit", "Meena", "Sanjay", "Pooja", "Karthik", "Divya", "Imtiaz", "Lakshmi", "Naveen", "Shalini", "Ganesh", "Ritu", "Manoj", "Anjali", "Sameer", "Harini", "Tarun", "Bhavna", "Yusuf", "Ashwini", "Nitin", "Swati"];

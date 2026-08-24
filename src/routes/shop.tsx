@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 import { LayoutGrid, List, Search, SlidersHorizontal } from "lucide-react";
 import { SiteLayout, Breadcrumbs } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { categories, inr, products, vendors } from "@/lib/data";
+import { inr, isStorefrontCategory, storefrontCategories, vendors } from "@/lib/data";
+import { useApp } from "@/lib/store";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -36,6 +37,7 @@ const sorts = ["Popular", "Newest", "Price Low → High", "Price High → Low", 
 
 function Shop() {
   const search = Route.useSearch();
+  const { products } = useApp();
   const [q, setQ] = useState(search.q ?? "");
   const [cats, setCats] = useState<string[]>(search.category ? [search.category] : []);
   const [vends, setVends] = useState<string[]>([]);
@@ -50,7 +52,7 @@ function Shop() {
   const perPage = 8;
 
   const filtered = useMemo(() => {
-    let list = products.filter((p) => p.status === "approved");
+    let list = products.filter((p) => p.status === "approved" && isStorefrontCategory(p.category));
     if (q) {
       const t = q.toLowerCase();
       list = list.filter(
@@ -73,7 +75,7 @@ function Shop() {
     if (sort === "Highest Rated") sorted.sort((a, b) => b.rating - a.rating);
     if (sort === "Newest") sorted.reverse();
     return sorted;
-  }, [q, cats, vends, maxPrice, minRating, inStock, offersOnly, sort]);
+  }, [products, q, cats, vends, maxPrice, minRating, inStock, offersOnly, sort]);
 
   const pages = Math.max(1, Math.ceil(filtered.length / perPage));
   const current = filtered.slice((page - 1) * perPage, page * perPage);
@@ -114,7 +116,7 @@ function Shop() {
           </h2>
 
           <FilterGroup title="Category">
-            {categories.map((c) => (
+            {storefrontCategories.map((c) => (
               <div key={c.name} className="space-y-2">
                 <Row label={c.name} checked={cats.includes(c.name)} onChange={() => toggle(cats, setCats, c.name)} bold />
                 <div className="ml-5 space-y-2">
