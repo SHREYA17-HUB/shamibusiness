@@ -2,16 +2,18 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AuthCard } from "@/components/site/AuthCard";
+import { OtpVerifyStep } from "@/components/site/OtpForm";
 import { Input } from "@/components/ui/input";
+import { useEmailOtp } from "@/lib/otp";
 import { useApp } from "@/lib/store";
 
 export const Route = createFileRoute("/vendor/login")({
   head: () => ({
     meta: [
       { title: "Vendor Login | Shami Business Ventures" },
-      { name: "description", content: "Vendor sign-in for product, order, inventory and payout management." },
+      { name: "description", content: "Vendor sign-in with email OTP for product, order, inventory and payout management." },
       { property: "og:title", content: "Vendor Login | Shami" },
-      { property: "og:description", content: "Manage listings, orders, stock and earnings." },
+      { property: "og:description", content: "Manage listings, orders, stock and earnings with OTP verification." },
     ],
   }),
   component: VendorLogin,
@@ -21,12 +23,20 @@ function VendorLogin() {
   const { login } = useApp();
   const navigate = useNavigate();
   const [email, setEmail] = useState("imran@shamisugar.in");
-  const [password, setPassword] = useState("vendor1234");
+  const otp = useEmailOtp();
+
+  const finish = async () => {
+    const ok = await otp.verify();
+    if (!ok) return;
+    login({ name: "Imran Shami", email: email.trim().toLowerCase(), role: "vendor" });
+    toast.success("Business email verified");
+    navigate({ to: "/vendor/dashboard" });
+  };
 
   return (
     <AuthCard
       title="Vendor Login"
-      subtitle="Manage your listings, orders, stock and payouts"
+      subtitle="Verify your business email with a one-time code"
       footer={
         <>
           New vendor?{" "}
@@ -36,30 +46,34 @@ function VendorLogin() {
         </>
       }
     >
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!email.includes("@") || password.length < 6) {
-            toast.error("Enter valid vendor credentials");
-            return;
-          }
-          login({ name: "Imran Shami", email, role: "vendor" });
-          navigate({ to: "/vendor/dashboard" });
-        }}
-        className="space-y-4"
-      >
-        <label className="block">
-          <span className="mb-1.5 block text-xs font-semibold text-charcoal">Business email</span>
-          <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-        <label className="block">
-          <span className="mb-1.5 block text-xs font-semibold text-charcoal">Password</span>
-          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </label>
-        <button className="w-full rounded-md bg-navy py-3 text-sm font-semibold text-white hover:bg-midnight">
-          Sign In to Vendor Panel
-        </button>
-      </form>
+      {otp.stage === "request" ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void otp.send(email.trim());
+          }}
+          className="space-y-4"
+        >
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-semibold text-charcoal">Business email</span>
+            <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email" />
+          </label>
+          <button
+            disabled={otp.sending}
+            className="w-full rounded-md bg-navy py-3 text-sm font-semibold text-white transition-colors hover:bg-midnight disabled:opacity-60"
+          >
+            {otp.sending ? "Sending code…" : "Send OTP"}
+          </button>
+          <p className="text-xs text-slate">A 6-digit verification code will be emailed to this address.</p>
+        </form>
+      ) : (
+        <OtpVerifyStep
+          email={email.trim()}
+          otp={otp}
+          submitLabel="Verify & Enter Vendor Panel"
+          onSubmit={() => void finish()}
+        />
+      )}
     </AuthCard>
   );
 }
