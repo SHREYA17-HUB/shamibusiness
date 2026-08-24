@@ -18,7 +18,7 @@ export const Route = createFileRoute("/categories")({
   component: Categories,
 });
 
-const icons = { Candy, Wheat, Droplets, Bean, Droplet } as const;
+const icons = { Candy, Wheat, Droplets, Bean, Droplet, Flame, Nut, Coffee, Sparkles } as const;
 
 function Categories() {
   return (
