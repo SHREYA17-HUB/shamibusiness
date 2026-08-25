@@ -1,7 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
-import { categories } from "@/lib/data";
+import { storefrontCategories } from "@/lib/data";
+
+const socials = [
+  { Icon: Instagram, href: "https://www.instagram.com/grain_bazar/", label: "Instagram" },
+  { Icon: Youtube, href: "https://www.youtube.com/@GrainBazar", label: "YouTube" },
+  { Icon: Facebook, href: "https://www.facebook.com/profile.php?id=61593879955539", label: "Facebook" },
+];
 
 export function SiteFooter() {
   return (
@@ -15,12 +21,14 @@ export function SiteFooter() {
               Business Ventures Pvt. Ltd. with verified mills and institutional-grade logistics.
             </p>
             <div className="mt-5 flex gap-3">
-              {[Facebook, Instagram, Youtube, Linkedin].map((Icon, i) => (
+              {socials.map(({ Icon, href, label }) => (
                 <a
-                  key={i}
-                  href="#"
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer noopener"
                   className="grid h-9 w-9 place-items-center rounded-full border border-white/15 transition-colors hover:border-gold hover:text-gold"
-                  aria-label="Social link"
+                  aria-label={label}
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -31,7 +39,7 @@ export function SiteFooter() {
           <div>
             <h3 className="text-sm font-semibold tracking-widest text-gold uppercase">Categories</h3>
             <ul className="mt-5 space-y-3 text-sm">
-              {categories.map((c) => (
+              {storefrontCategories.map((c) => (
                 <li key={c.name}>
                   <Link to="/shop" search={{ category: c.name }} className="transition-colors hover:text-gold">
                     {c.name}
