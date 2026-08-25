@@ -1,7 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
-import { categories } from "@/lib/data";
+import { storefrontCategories } from "@/lib/data";
+
+const socials = [
+  { Icon: Instagram, href: "https://www.instagram.com/grain_bazar/", label: "Instagram" },
+  { Icon: Youtube, href: "https://www.youtube.com/@GrainBazar", label: "YouTube" },
+  { Icon: Facebook, href: "https://www.facebook.com/profile.php?id=61593879955539", label: "Facebook" },
+];
 
 export function SiteFooter() {
   return (
