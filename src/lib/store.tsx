@@ -118,7 +118,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }>;
         setUser(s.user ?? null);
         setCart(s.cart ?? []);
-        setWishlist(s.wishlist ?? []);
+        setWishlist([]);
         if (s.products?.length) setProducts(s.products);
         if (s.orders?.length) setOrders(s.orders);
         if (s.vendors?.length) setVendors(s.vendors);
