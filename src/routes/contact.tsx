@@ -94,9 +94,9 @@ function Contact() {
         <aside className="h-max space-y-4">
           {[
             [MapPin, "Registered office", "Shami House, Industrial Estate, Belagavi, Karnataka 590010"],
-            [Phone, "Supply desk", "+91 98450 11223 (Mon–Sat, 9am–7pm)"],
+            [Phone, "Supply desk", "+91 95385 00840 (Mon–Sat, 9am–7pm)"],
             [Mail, "Email", "care@shamiventures.in"],
-            [MessageSquare, "WhatsApp", "+91 98450 11223"],
+            [MessageSquare, "WhatsApp", "+91 95385 00840"],
           ].map(([Icon, t, d]) => {
             const I = Icon as React.ComponentType<{ className?: string }>;
             return (

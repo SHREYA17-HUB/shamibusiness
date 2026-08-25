@@ -68,7 +68,7 @@ export function SiteFooter() {
                 Shami House, Industrial Estate, Belagavi, Karnataka 590010
               </li>
               <li className="flex gap-3">
-                <Phone className="h-4 w-4 shrink-0 text-gold" /> +91 98450 11223
+                <Phone className="h-4 w-4 shrink-0 text-gold" /> +91 95385 00840
               </li>
               <li className="flex gap-3">
                 <Mail className="h-4 w-4 shrink-0 text-gold" /> care@shamiventures.in
