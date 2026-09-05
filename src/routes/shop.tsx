@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 import { LayoutGrid, List, Search, SlidersHorizontal } from "lucide-react";
 import { SiteLayout, Breadcrumbs } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { inr, isStorefrontProduct, storefrontCategories, vendors } from "@/lib/data";
+import { inr, isStorefrontProduct, vendors } from "@/lib/data";
+import { useVisibleCategories } from "@/components/site/CategoryCards";
 import { useApp } from "@/lib/store";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,6 +39,7 @@ const sorts = ["Popular", "Newest", "Price Low → High", "Price High → Low", 
 function Shop() {
   const search = Route.useSearch();
   const { products } = useApp();
+  const visibleCats = useVisibleCategories();
   const [q, setQ] = useState(search.q ?? "");
   const [cats, setCats] = useState<string[]>(search.category ? [search.category] : []);
   const [vends, setVends] = useState<string[]>([]);
@@ -52,7 +54,8 @@ function Shop() {
   const perPage = 8;
 
   const filtered = useMemo(() => {
-    let list = products.filter((p) => isStorefrontProduct(p));
+    const allowed = visibleCats.map((c) => c.name);
+    let list = products.filter((p) => isStorefrontProduct(p) && allowed.includes(p.category));
     if (q) {
       const t = q.toLowerCase();
       list = list.filter(
@@ -75,7 +78,7 @@ function Shop() {
     if (sort === "Highest Rated") sorted.sort((a, b) => b.rating - a.rating);
     if (sort === "Newest") sorted.reverse();
     return sorted;
-  }, [products, q, cats, vends, maxPrice, minRating, inStock, offersOnly, sort]);
+  }, [products, visibleCats, q, cats, vends, maxPrice, minRating, inStock, offersOnly, sort]);
 
   const pages = Math.max(1, Math.ceil(filtered.length / perPage));
   const current = filtered.slice((page - 1) * perPage, page * perPage);
@@ -116,11 +119,11 @@ function Shop() {
           </h2>
 
           <FilterGroup title="Category">
-            {storefrontCategories.map((c) => (
-              <div key={c.name} className="space-y-2">
+            {visibleCats.map((c) => (
+              <div key={c.id} className="space-y-2">
                 <Row label={c.name} checked={cats.includes(c.name)} onChange={() => toggle(cats, setCats, c.name)} bold />
                 <div className="ml-5 space-y-2">
-                  {c.subs.map((s) => (
+                  {c.grades.map((s) => (
                     <Row key={s} label={s} checked={cats.includes(s)} onChange={() => toggle(cats, setCats, s)} />
                   ))}
                 </div>
