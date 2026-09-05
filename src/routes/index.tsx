@@ -1,18 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
-  Bean,
   BadgeCheck,
-  Candy,
-  Coffee,
-  Droplets,
-  Flame,
   Headset,
-  Nut,
   ShieldCheck,
-  Sparkles,
   Truck,
-  Wheat,
 } from "lucide-react";
 import { SiteLayout, SectionHeading } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
@@ -23,23 +15,22 @@ import heroImg from "@/assets/hero-sugar.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Shami Business Ventures — Premium S1 Sugar Marketplace" },
+      { title: "Shami Business Ventures — Rice, Sugar & Oil Marketplace" },
       {
         name: "description",
         content:
-          "Buy premium S1 refined sugar from verified mills. Bulk bags, retail packs, GST invoicing and pan-India delivery by Shami Business Ventures Pvt. Ltd.",
+          "Buy premium rice, S1 refined sugar and edible oils from verified mills. Bulk bags, retail packs, GST invoicing and pan-India delivery by Shami Business Ventures Pvt. Ltd.",
       },
-      { property: "og:title", content: "Premium S1 Sugar Marketplace | Shami Business Ventures" },
+      { property: "og:title", content: "Rice, Sugar & Oil Marketplace | Shami Business Ventures" },
       {
         property: "og:description",
-        content: "Quality S1 sugar delivered to your door from trusted mills.",
+        content: "Quality rice, sugar and oil delivered to your door from trusted mills.",
       },
     ],
   }),
   component: Index,
 });
 
-const catIcons = { Candy, Wheat, Droplets, Bean, Flame, Nut, Coffee, Sparkles } as const;
 
 function Index() {
   return (
