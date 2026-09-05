@@ -202,7 +202,7 @@ export const products: Product[] = productSeed.map(([name, category, subcategory
     image: catImage[category] ?? sugarImg,
     mrp,
     price,
-    gst: category === "Oils" || category === "Sugar" ? 5 : 12,
+    gst: category === "Oil" || category === "Sugar" ? 5 : 12,
     rating: Math.round((3.8 + (i % 7) * 0.17) * 10) / 10,
     reviews: 18 + i * 7,
     stock: i % 9 === 3 ? 0 : i % 6 === 1 ? rint(4, 18) : rint(40, 460),
