@@ -66,7 +66,15 @@ function Shop() {
           p.category.toLowerCase().includes(t),
       );
     }
-    if (cats.length) list = list.filter((p) => cats.includes(p.category) || cats.includes(p.subcategory));
+    if (cats.length) {
+      const norm = (v: string) => v.toLowerCase().replace(/grade|\s+/g, "");
+      list = list.filter(
+        (p) =>
+          cats.includes(p.category) ||
+          cats.includes(p.subcategory) ||
+          cats.some((c) => norm(p.subcategory).includes(norm(c)) || norm(p.name).includes(norm(c))),
+      );
+    }
     if (vends.length) list = list.filter((p) => vends.includes(p.vendor));
     list = list.filter((p) => p.price <= maxPrice);
     if (minRating) list = list.filter((p) => p.rating >= minRating);
