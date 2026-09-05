@@ -9,11 +9,13 @@ import {
   products as seedProducts,
   returns as seedReturns,
   reviews as seedReviews,
+  storeCategorySeed,
   vendors as seedVendors,
   type Order,
   type OrderStatus,
   type Product,
   type ReturnRequest,
+  type StoreCategory,
 } from "./data";
 
 export type Role = "customer" | "vendor" | "admin";
@@ -43,6 +45,12 @@ type AppState = {
 
   wishlist: string[];
   toggleWishlist: (id: string) => void;
+
+  categories: StoreCategory[];
+  addCategory: (c: Omit<StoreCategory, "id" | "order">) => void;
+  updateCategory: (id: string, patch: Partial<StoreCategory>) => void;
+  deleteCategory: (id: string) => void;
+  moveCategory: (id: string, dir: -1 | 1) => void;
 
   products: Product[];
   addProduct: (p: Product) => void;
@@ -97,6 +105,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartLine[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>(seedProducts);
+  const [categories, setCategories] = useState<StoreCategory[]>(storeCategorySeed);
   const [orders, setOrders] = useState<Order[]>(seedOrders);
   const [vendors, setVendors] = useState<Vendor[]>(seedVendors);
   const [customers, setCustomers] = useState<Customer[]>(seedCustomers);
@@ -113,12 +122,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const s = JSON.parse(raw) as Partial<{
           user: SessionUser | null; cart: CartLine[]; wishlist: string[];
-          products: Product[]; orders: Order[]; vendors: Vendor[]; customers: Customer[];
+          categories: StoreCategory[]; products: Product[]; orders: Order[]; vendors: Vendor[]; customers: Customer[];
           reviews: Review[]; returns: ReturnRequest[]; coupons: Coupon[]; notifications: Notif[]; addresses: Address[];
         }>;
         setUser(s.user ?? null);
         setCart(s.cart ?? []);
         setWishlist([]);
+        if (s.categories?.length) setCategories(s.categories);
         if (s.products?.length) setProducts(s.products);
         if (s.orders?.length) setOrders(s.orders);
         if (s.vendors?.length) setVendors(s.vendors);
@@ -146,12 +156,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(
         KEY,
-        JSON.stringify({ user, cart, wishlist, products, orders, vendors, customers, reviews, returns, coupons, notifications, addresses }),
+        JSON.stringify({ user, cart, wishlist, categories, products, orders, vendors, customers, reviews, returns, coupons, notifications, addresses }),
       );
     } catch {
       /* quota */
     }
-  }, [hydrated, user, cart, wishlist, products, orders, vendors, customers, reviews, returns, coupons, notifications, addresses]);
+  }, [hydrated, user, cart, wishlist, categories, products, orders, vendors, customers, reviews, returns, coupons, notifications, addresses]);
 
   const value = useMemo<AppState>(() => {
     const cartItems = cart
@@ -186,6 +196,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       wishlist,
       toggleWishlist: (id) => setWishlist((w) => (w.includes(id) ? w.filter((x) => x !== id) : [...w, id])),
+
+      categories,
+      addCategory: (c) =>
+        setCategories((l) => [...l, { ...c, id: `C${Date.now().toString().slice(-6)}`, order: l.length + 1 }]),
+      updateCategory: (id, patch) => setCategories((l) => l.map((c) => (c.id === id ? { ...c, ...patch } : c))),
+      deleteCategory: (id) => setCategories((l) => l.filter((c) => c.id !== id)),
+      moveCategory: (id, dir) =>
+        setCategories((l) => {
+          const sorted = [...l].sort((a, b) => a.order - b.order);
+          const i = sorted.findIndex((c) => c.id === id);
+          const j = i + dir;
+          if (i < 0 || j < 0 || j >= sorted.length) return l;
+          [sorted[i]!, sorted[j]!] = [sorted[j]!, sorted[i]!];
+          return sorted.map((c, k) => ({ ...c, order: k + 1 }));
+        }),
 
       products,
       addProduct: (p) => setProducts((list) => [p, ...list]),
@@ -271,7 +296,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       deleteAddress: (id) => setAddresses((l) => l.filter((a) => a.id !== id)),
       setDefaultAddress: (id) => setAddresses((l) => l.map((a) => ({ ...a, default: a.id === id }))),
     };
-  }, [user, cart, wishlist, products, orders, vendors, customers, reviews, returns, coupons, notifications, addresses]);
+  }, [user, cart, wishlist, categories, products, orders, vendors, customers, reviews, returns, coupons, notifications, addresses]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

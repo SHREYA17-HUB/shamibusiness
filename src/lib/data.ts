@@ -46,8 +46,8 @@ export type Product = {
 
 export const categories = [
   { name: "Sugar", icon: "Candy", subs: ["S1 Sugar", "S2 Sugar", "M30 Sugar"], count: 42 },
-  { name: "Rice", icon: "Wheat", subs: ["Raw Rice", "Steam Rice", "Basmati Rice"], count: 38 },
-  { name: "Oils", icon: "Droplets", subs: ["Sunflower Oil 1 Litre", "Sunflower Oil 500ml", "Groundnut Oil"], count: 26 },
+  { name: "Rice", icon: "Wheat", subs: ["Grade A", "Grade B", "Premium Rice"], count: 38 },
+  { name: "Oil", icon: "Droplets", subs: ["Sunflower Oil", "Groundnut Oil", "Palm Oil"], count: 26 },
   { name: "Pulses", icon: "Bean", subs: ["Toor Dal", "Urad Dal", "Chana Dal", "Moong Dal"], count: 34 },
   { name: "Flours", icon: "Wheat", subs: ["Chakki Atta", "Maida", "Besan"], count: 22 },
   { name: "Spices", icon: "Flame", subs: ["Turmeric", "Chilli Powder", "Coriander"], count: 30 },
@@ -57,21 +57,42 @@ export const categories = [
   { name: "Salt & Sweeteners", icon: "Sparkles", subs: ["Iodised Salt", "Rock Salt"], count: 11 },
 ];
 
-/* Storefront visibility: customers currently only see S1 Sugar. */
+/* ---------- admin-managed storefront categories ---------- */
+export type StoreCategory = {
+  id: string;
+  name: string;
+  tagline: string;
+  image: string;
+  grades: string[];
+  enabled: boolean;
+  order: number;
+};
+
+export const storeCategorySeed: StoreCategory[] = [
+  { id: "C1", name: "Rice", tagline: "Raw, steam & premium grades", image: riceImg, grades: ["Grade A", "Grade B", "Premium Rice"], enabled: true, order: 1 },
+  { id: "C2", name: "Sugar", tagline: "Mill-fresh refined sugar", image: sugarImg, grades: ["Grade S1"], enabled: true, order: 2 },
+  { id: "C3", name: "Oil", tagline: "Edible oils in every pack size", image: oilImg, grades: ["Sunflower Oil", "Groundnut Oil", "Palm Oil"], enabled: true, order: 3 },
+];
+
+/* Storefront visibility: Rice, Sugar (S1 only) and Oil. */
+export const STOREFRONT_CATEGORIES = ["Rice", "Sugar", "Oil"];
 export const STOREFRONT_SUBCATEGORIES = ["S1 Sugar"];
 export const storefrontCategories = categories
-  .filter((c) => c.name === "Sugar")
-  .map((c) => ({ ...c, subs: c.subs.filter((s) => STOREFRONT_SUBCATEGORIES.includes(s)) }));
+  .filter((c) => STOREFRONT_CATEGORIES.includes(c.name))
+  .map((c) => ({ ...c, subs: c.name === "Sugar" ? ["S1 Sugar"] : c.subs }));
 export const isStorefrontCategory = (name: string) =>
   storefrontCategories.some((c) => c.name === name || c.subs.includes(name));
 export const isStorefrontProduct = (p: Product) =>
-  p.status === "approved" && p.category === "Sugar" && STOREFRONT_SUBCATEGORIES.includes(p.subcategory);
+  p.status === "approved" &&
+  STOREFRONT_CATEGORIES.includes(p.category) &&
+  (p.category !== "Sugar" || STOREFRONT_SUBCATEGORIES.includes(p.subcategory));
 
 const catImage: Record<string, string> = {
-  Sugar: sugarImg, Rice: riceImg, Oils: oilImg, Pulses: dalImg,
+  Sugar: sugarImg, Rice: riceImg, Oil: oilImg, Pulses: dalImg,
   Flours: riceImg, Spices: dalImg, "Dry Fruits": dalImg,
   "Tea & Coffee": dalImg, Jaggery: sugarImg, "Salt & Sweeteners": sugarImg,
 };
+
 
 /* ---------- vendors ---------- */
 const vendorSeed: Array<[string, string, string, string, string, string, "approved" | "pending" | "suspended", number]> = [
@@ -109,19 +130,22 @@ const productSeed: Array<[string, string, string, string, number, number]> = [
   ["S2 Sugar Retail Pack 2kg", "Sugar", "S2 Sugar", "2 kg", 128, 109],
   ["Brown Sugar Natural 1kg", "Sugar", "M30 Sugar", "1 kg", 145, 119],
   ["Sugar Cubes Box 500g", "Sugar", "S1 Sugar", "500 g", 98, 84],
-  ["Premium Raw Rice 25kg", "Rice", "Raw Rice", "25 kg", 1650, 1499],
-  ["Steam Rice Sona Masoori 25kg", "Rice", "Steam Rice", "25 kg", 1750, 1585],
-  ["Steam Rice Retail 5kg", "Rice", "Steam Rice", "5 kg", 420, 379],
-  ["Raw Rice Retail 10kg", "Rice", "Raw Rice", "10 kg", 780, 699],
-  ["Basmati Rice Classic 5kg", "Rice", "Basmati Rice", "5 kg", 690, 615],
-  ["Basmati Rice Premium 25kg", "Rice", "Basmati Rice", "25 kg", 3250, 2949],
-  ["Idli Rice 25kg", "Rice", "Raw Rice", "25 kg", 1520, 1385],
-  ["Sunflower Oil 1 Litre", "Oils", "Sunflower Oil 1 Litre", "1 L", 165, 142],
-  ["Sunflower Oil 500ml", "Oils", "Sunflower Oil 500ml", "500 ml", 92, 79],
-  ["Sunflower Oil 15L Tin", "Oils", "Sunflower Oil 1 Litre", "15 L", 2250, 2049],
-  ["Groundnut Oil 1 Litre", "Oils", "Groundnut Oil", "1 L", 218, 189],
-  ["Groundnut Oil 5L Can", "Oils", "Groundnut Oil", "5 L", 1050, 949],
-  ["Refined Sunflower Oil 5L Can", "Oils", "Sunflower Oil 1 Litre", "5 L", 820, 739],
+  ["Grade A Raw Rice 25kg", "Rice", "Grade A", "25 kg", 1650, 1499],
+  ["Grade A Steam Rice Sona Masoori 25kg", "Rice", "Grade A", "25 kg", 1750, 1585],
+  ["Grade B Steam Rice Retail 5kg", "Rice", "Grade B", "5 kg", 420, 379],
+  ["Grade B Raw Rice Retail 10kg", "Rice", "Grade B", "10 kg", 780, 699],
+  ["Premium Rice Basmati Classic 5kg", "Rice", "Premium Rice", "5 kg", 690, 615],
+  ["Premium Rice Basmati 25kg", "Rice", "Premium Rice", "25 kg", 3250, 2949],
+  ["Grade A Idli Rice 25kg", "Rice", "Grade A", "25 kg", 1520, 1385],
+  ["Sunflower Oil 1 Litre", "Oil", "Sunflower Oil", "1 L", 165, 142],
+  ["Sunflower Oil 500ml", "Oil", "Sunflower Oil", "500 ml", 92, 79],
+  ["Sunflower Oil 15L Tin", "Oil", "Sunflower Oil", "15 L", 2250, 2049],
+  ["Groundnut Oil 1 Litre", "Oil", "Groundnut Oil", "1 L", 218, 189],
+  ["Groundnut Oil 5L Can", "Oil", "Groundnut Oil", "5 L", 1050, 949],
+  ["Refined Sunflower Oil 5L Can", "Oil", "Sunflower Oil", "5 L", 820, 739],
+  ["Palm Oil 1 Litre Pouch", "Oil", "Palm Oil", "1 L", 138, 119],
+  ["Palm Oil 15L Tin", "Oil", "Palm Oil", "15 L", 1980, 1799],
+
   ["Toor Dal Premium 1kg", "Pulses", "Toor Dal", "1 kg", 185, 159],
   ["Urad Dal Gota 1kg", "Pulses", "Urad Dal", "1 kg", 172, 148],
   ["Chana Dal Select 1kg", "Pulses", "Chana Dal", "1 kg", 132, 112],
@@ -178,7 +202,7 @@ export const products: Product[] = productSeed.map(([name, category, subcategory
     image: catImage[category] ?? sugarImg,
     mrp,
     price,
-    gst: category === "Oils" || category === "Sugar" ? 5 : 12,
+    gst: category === "Oil" || category === "Sugar" ? 5 : 12,
     rating: Math.round((3.8 + (i % 7) * 0.17) * 10) / 10,
     reviews: 18 + i * 7,
     stock: i % 9 === 3 ? 0 : i % 6 === 1 ? rint(4, 18) : rint(40, 460),

@@ -1,44 +1,36 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
-  Bean,
   BadgeCheck,
-  Candy,
-  Coffee,
-  Droplets,
-  Flame,
   Headset,
-  Nut,
   ShieldCheck,
-  Sparkles,
   Truck,
-  Wheat,
 } from "lucide-react";
 import { SiteLayout, SectionHeading } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { byTag, isStorefrontProduct, products, storefrontCategories } from "@/lib/data";
+import { byTag, isStorefrontProduct, products } from "@/lib/data";
+import { CategoryCards } from "@/components/site/CategoryCards";
 import heroImg from "@/assets/hero-sugar.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Shami Business Ventures — Premium S1 Sugar Marketplace" },
+      { title: "Shami Business Ventures — Rice, Sugar & Oil Marketplace" },
       {
         name: "description",
         content:
-          "Buy premium S1 refined sugar from verified mills. Bulk bags, retail packs, GST invoicing and pan-India delivery by Shami Business Ventures Pvt. Ltd.",
+          "Buy premium rice, S1 refined sugar and edible oils from verified mills. Bulk bags, retail packs, GST invoicing and pan-India delivery by Shami Business Ventures Pvt. Ltd.",
       },
-      { property: "og:title", content: "Premium S1 Sugar Marketplace | Shami Business Ventures" },
+      { property: "og:title", content: "Rice, Sugar & Oil Marketplace | Shami Business Ventures" },
       {
         property: "og:description",
-        content: "Quality S1 sugar delivered to your door from trusted mills.",
+        content: "Quality rice, sugar and oil delivered to your door from trusted mills.",
       },
     ],
   }),
   component: Index,
 });
 
-const catIcons = { Candy, Wheat, Droplets, Bean, Flame, Nut, Coffee, Sparkles } as const;
 
 function Index() {
   return (
@@ -134,42 +126,17 @@ function Index() {
       </section>
 
       {/* Categories */}
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
         <SectionHeading
           eyebrow="Browse the catalogue"
-          title="Shop S1 Sugar"
+          title="Shop by Category"
           action={
             <Link to="/categories" className="hidden text-sm font-semibold text-navy hover:text-gold sm:block">
               View all
             </Link>
           }
         />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {storefrontCategories.map((c) => {
-            const Icon = catIcons[c.icon as keyof typeof catIcons] ?? Candy;
-            return (
-              <Link
-                key={c.name}
-                to="/shop"
-                search={{ category: c.name }}
-                className="card-premium group p-6"
-              >
-                <span className="grid h-12 w-12 place-items-center rounded-lg bg-ivory text-gold transition-colors group-hover:bg-gold group-hover:text-midnight">
-                  <Icon className="h-6 w-6" />
-                </span>
-                <h3 className="mt-4 text-lg font-bold text-navy">{c.name}</h3>
-                <p className="mt-1 text-xs text-slate">{c.count} products · {c.subs.length} variants</p>
-                <ul className="mt-4 space-y-1.5 text-sm text-slate">
-                  {c.subs.map((s) => (
-                    <li key={s} className="flex items-center gap-2">
-                      <span className="h-1 w-1 rounded-full bg-gold" /> {s}
-                    </li>
-                  ))}
-                </ul>
-              </Link>
-            );
-          })}
-        </div>
+        <CategoryCards />
       </section>
 
       <ProductRow eyebrow="Handpicked" title="Featured Products" items={byTag("featured")} />
