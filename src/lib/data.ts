@@ -46,8 +46,8 @@ export type Product = {
 
 export const categories = [
   { name: "Sugar", icon: "Candy", subs: ["S1 Sugar", "S2 Sugar", "M30 Sugar"], count: 42 },
-  { name: "Rice", icon: "Wheat", subs: ["Raw Rice", "Steam Rice", "Basmati Rice"], count: 38 },
-  { name: "Oils", icon: "Droplets", subs: ["Sunflower Oil 1 Litre", "Sunflower Oil 500ml", "Groundnut Oil"], count: 26 },
+  { name: "Rice", icon: "Wheat", subs: ["Grade A", "Grade B", "Premium Rice"], count: 38 },
+  { name: "Oil", icon: "Droplets", subs: ["Sunflower Oil", "Groundnut Oil", "Palm Oil"], count: 26 },
   { name: "Pulses", icon: "Bean", subs: ["Toor Dal", "Urad Dal", "Chana Dal", "Moong Dal"], count: 34 },
   { name: "Flours", icon: "Wheat", subs: ["Chakki Atta", "Maida", "Besan"], count: 22 },
   { name: "Spices", icon: "Flame", subs: ["Turmeric", "Chilli Powder", "Coriander"], count: 30 },
@@ -57,21 +57,42 @@ export const categories = [
   { name: "Salt & Sweeteners", icon: "Sparkles", subs: ["Iodised Salt", "Rock Salt"], count: 11 },
 ];
 
-/* Storefront visibility: customers currently only see S1 Sugar. */
+/* ---------- admin-managed storefront categories ---------- */
+export type StoreCategory = {
+  id: string;
+  name: string;
+  tagline: string;
+  image: string;
+  grades: string[];
+  enabled: boolean;
+  order: number;
+};
+
+export const storeCategorySeed: StoreCategory[] = [
+  { id: "C1", name: "Rice", tagline: "Raw, steam & premium grades", image: riceImg, grades: ["Grade A", "Grade B", "Premium Rice"], enabled: true, order: 1 },
+  { id: "C2", name: "Sugar", tagline: "Mill-fresh refined sugar", image: sugarImg, grades: ["Grade S1"], enabled: true, order: 2 },
+  { id: "C3", name: "Oil", tagline: "Edible oils in every pack size", image: oilImg, grades: ["Sunflower Oil", "Groundnut Oil", "Palm Oil"], enabled: true, order: 3 },
+];
+
+/* Storefront visibility: Rice, Sugar (S1 only) and Oil. */
+export const STOREFRONT_CATEGORIES = ["Rice", "Sugar", "Oil"];
 export const STOREFRONT_SUBCATEGORIES = ["S1 Sugar"];
 export const storefrontCategories = categories
-  .filter((c) => c.name === "Sugar")
-  .map((c) => ({ ...c, subs: c.subs.filter((s) => STOREFRONT_SUBCATEGORIES.includes(s)) }));
+  .filter((c) => STOREFRONT_CATEGORIES.includes(c.name))
+  .map((c) => ({ ...c, subs: c.name === "Sugar" ? ["S1 Sugar"] : c.subs }));
 export const isStorefrontCategory = (name: string) =>
   storefrontCategories.some((c) => c.name === name || c.subs.includes(name));
 export const isStorefrontProduct = (p: Product) =>
-  p.status === "approved" && p.category === "Sugar" && STOREFRONT_SUBCATEGORIES.includes(p.subcategory);
+  p.status === "approved" &&
+  STOREFRONT_CATEGORIES.includes(p.category) &&
+  (p.category !== "Sugar" || STOREFRONT_SUBCATEGORIES.includes(p.subcategory));
 
 const catImage: Record<string, string> = {
-  Sugar: sugarImg, Rice: riceImg, Oils: oilImg, Pulses: dalImg,
+  Sugar: sugarImg, Rice: riceImg, Oil: oilImg, Pulses: dalImg,
   Flours: riceImg, Spices: dalImg, "Dry Fruits": dalImg,
   "Tea & Coffee": dalImg, Jaggery: sugarImg, "Salt & Sweeteners": sugarImg,
 };
+
 
 /* ---------- vendors ---------- */
 const vendorSeed: Array<[string, string, string, string, string, string, "approved" | "pending" | "suspended", number]> = [
