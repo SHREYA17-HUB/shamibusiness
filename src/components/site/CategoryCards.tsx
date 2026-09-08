@@ -18,7 +18,19 @@ export function CategoryCards({ limit }: { limit?: number }) {
     <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
       {list.map((c, i) => {
         const count = products.filter((p) => p.category === c.name && isStorefrontProduct(p)).length;
-        return (
+        const slug = categorySlug(c.name === "Cooking Oil" ? "Oil" : c.name);
+        const node = getCategoryNode(slug);
+        return node ? (
+          <Link
+            key={c.id}
+            to="/categories/$slug"
+            params={{ slug }}
+            style={{ animationDelay: `${i * 70}ms` }}
+            className="card-premium animate-rise group relative flex flex-col overflow-hidden active:scale-[0.98] active:transition-transform"
+          >
+            <CardBody c={c} count={count} />
+          </Link>
+        ) : (
           <Link
             key={c.id}
             to="/shop"
