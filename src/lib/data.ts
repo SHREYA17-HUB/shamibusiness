@@ -177,6 +177,30 @@ const productSeed: Array<[string, string, string, string, number, number]> = [
   ["Jaggery Powder 1kg", "Jaggery", "Jaggery Powder", "1 kg", 128, 109],
   ["Iodised Salt 1kg", "Salt & Sweeteners", "Iodised Salt", "1 kg", 28, 22],
   ["Himalayan Rock Salt 1kg", "Salt & Sweeteners", "Rock Salt", "1 kg", 96, 79],
+
+  /* rice varieties */
+  ["R-111 Raw Rice 25kg", "Rice", "Grade A", "25 kg", 1680, 1519],
+  ["R-222 Raw Rice 25kg", "Rice", "Grade A", "25 kg", 1620, 1465],
+  ["R-333 Raw Rice 25kg", "Rice", "Grade B", "25 kg", 1560, 1409],
+  ["R-444 Raw Rice 25kg", "Rice", "Grade B", "25 kg", 1495, 1349],
+  ["S-111 Steam Rice 25kg", "Rice", "Grade A", "25 kg", 1740, 1579],
+  ["S-222 Steam Rice 25kg", "Rice", "Grade A", "25 kg", 1690, 1529],
+  ["S-333 Steam Rice 25kg", "Rice", "Grade B", "25 kg", 1610, 1455],
+  ["S-444 Steam Rice 25kg", "Rice", "Premium Rice", "25 kg", 1880, 1699],
+
+  /* cooking oil brands */
+  ["Sunpure Sunflower Oil 1 Litre", "Oil", "Sunflower Oil", "1 L", 172, 148],
+  ["Sunpure Sunflower Oil 15L Tin", "Oil", "Sunflower Oil", "15 L", 2295, 2085],
+  ["GoldWinner Sunflower Oil 1 Litre", "Oil", "Sunflower Oil", "1 L", 168, 145],
+  ["GoldWinner Sunflower Oil 5L Can", "Oil", "Sunflower Oil", "5 L", 845, 759],
+  ["Palm Shakthi Palm Oil 1 Litre", "Oil", "Palm Oil", "1 L", 132, 115],
+  ["Palm Shakthi Palm Oil 15L Tin", "Oil", "Palm Oil", "15 L", 1950, 1775],
+  ["Shakthi Gold Palm Oil 1 Litre", "Oil", "Palm Oil", "1 L", 136, 118],
+  ["Shakthi Gold Palm Oil 15L Tin", "Oil", "Palm Oil", "15 L", 1990, 1805],
+  ["Raaga Palm Oil 1 Litre", "Oil", "Palm Oil", "1 L", 129, 112],
+  ["Raaga Palm Oil 15L Tin", "Oil", "Palm Oil", "15 L", 1930, 1749],
+  ["SVT Gold Palm Oil 1 Litre", "Oil", "Palm Oil", "1 L", 134, 117],
+  ["SVT Gold Palm Oil 15L Tin", "Oil", "Palm Oil", "15 L", 1975, 1789],
 ];
 
 const dt = (i: number, base = 1) =>
