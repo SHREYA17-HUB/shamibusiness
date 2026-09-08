@@ -49,6 +49,8 @@ import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminVendorsRouteImport } from './routes/admin.vendors'
 import { Route as AdminWebsiteRouteImport } from './routes/admin.website'
+import { Route as CategoriesIndexRouteImport } from './routes/categories.index'
+import { Route as CategoriesSlugRouteImport } from './routes/categories.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as VendorIndexRouteImport } from './routes/vendor.index'
 import { Route as VendorDashboardRouteImport } from './routes/vendor.dashboard'
@@ -67,6 +69,7 @@ import { Route as AdminCustomersIdRouteImport } from './routes/admin.customers.$
 import { Route as AdminOrdersIdRouteImport } from './routes/admin.orders.$id'
 import { Route as AdminProductsIdRouteImport } from './routes/admin.products.$id'
 import { Route as AdminVendorsIdRouteImport } from './routes/admin.vendors.$id'
+import { Route as CategoriesSlugChildRouteImport } from './routes/categories.$slug.$child'
 import { Route as VendorOrdersIdRouteImport } from './routes/vendor.orders.$id'
 import { Route as VendorProductsAddRouteImport } from './routes/vendor.products.add'
 
@@ -270,6 +273,16 @@ const AdminWebsiteRoute = AdminWebsiteRouteImport.update({
   path: '/admin/website',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriesIndexRoute = CategoriesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CategoriesRoute,
+} as any)
+const CategoriesSlugRoute = CategoriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CategoriesRoute,
+} as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
   path: '/product/$id',
@@ -360,6 +373,11 @@ const AdminVendorsIdRoute = AdminVendorsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminVendorsRoute,
 } as any)
+const CategoriesSlugChildRoute = CategoriesSlugChildRouteImport.update({
+  id: '/$child',
+  path: '/$child',
+  getParentRoute: () => CategoriesSlugRoute,
+} as any)
 const VendorOrdersIdRoute = VendorOrdersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -376,7 +394,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/account': typeof AccountRouteWithChildren
   '/cart': typeof CartRoute
-  '/categories': typeof CategoriesRoute
+  '/categories': typeof CategoriesRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
@@ -411,6 +429,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/vendors': typeof AdminVendorsRouteWithChildren
   '/admin/website': typeof AdminWebsiteRoute
+  '/categories/$slug': typeof CategoriesSlugRouteWithChildren
   '/product/$id': typeof ProductIdRoute
   '/vendor/dashboard': typeof VendorDashboardRoute
   '/vendor/earnings': typeof VendorEarningsRoute
@@ -424,12 +443,14 @@ export interface FileRoutesByFullPath {
   '/vendor/reviews': typeof VendorReviewsRoute
   '/vendor/settings': typeof VendorSettingsRoute
   '/admin/': typeof AdminIndexRoute
+  '/categories/': typeof CategoriesIndexRoute
   '/vendor/': typeof VendorIndexRoute
   '/account/orders/$id': typeof AccountOrdersIdRoute
   '/admin/customers/$id': typeof AdminCustomersIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/vendors/$id': typeof AdminVendorsIdRoute
+  '/categories/$slug/$child': typeof CategoriesSlugChildRoute
   '/vendor/orders/$id': typeof VendorOrdersIdRoute
   '/vendor/products/add': typeof VendorProductsAddRoute
 }
@@ -438,7 +459,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/account': typeof AccountRouteWithChildren
   '/cart': typeof CartRoute
-  '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
@@ -473,6 +493,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/vendors': typeof AdminVendorsRouteWithChildren
   '/admin/website': typeof AdminWebsiteRoute
+  '/categories/$slug': typeof CategoriesSlugRouteWithChildren
   '/product/$id': typeof ProductIdRoute
   '/vendor/dashboard': typeof VendorDashboardRoute
   '/vendor/earnings': typeof VendorEarningsRoute
@@ -486,12 +507,14 @@ export interface FileRoutesByTo {
   '/vendor/reviews': typeof VendorReviewsRoute
   '/vendor/settings': typeof VendorSettingsRoute
   '/admin': typeof AdminIndexRoute
+  '/categories': typeof CategoriesIndexRoute
   '/vendor': typeof VendorIndexRoute
   '/account/orders/$id': typeof AccountOrdersIdRoute
   '/admin/customers/$id': typeof AdminCustomersIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/vendors/$id': typeof AdminVendorsIdRoute
+  '/categories/$slug/$child': typeof CategoriesSlugChildRoute
   '/vendor/orders/$id': typeof VendorOrdersIdRoute
   '/vendor/products/add': typeof VendorProductsAddRoute
 }
@@ -501,7 +524,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/account': typeof AccountRouteWithChildren
   '/cart': typeof CartRoute
-  '/categories': typeof CategoriesRoute
+  '/categories': typeof CategoriesRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
@@ -536,6 +559,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/vendors': typeof AdminVendorsRouteWithChildren
   '/admin/website': typeof AdminWebsiteRoute
+  '/categories/$slug': typeof CategoriesSlugRouteWithChildren
   '/product/$id': typeof ProductIdRoute
   '/vendor/dashboard': typeof VendorDashboardRoute
   '/vendor/earnings': typeof VendorEarningsRoute
@@ -549,12 +573,14 @@ export interface FileRoutesById {
   '/vendor/reviews': typeof VendorReviewsRoute
   '/vendor/settings': typeof VendorSettingsRoute
   '/admin/': typeof AdminIndexRoute
+  '/categories/': typeof CategoriesIndexRoute
   '/vendor/': typeof VendorIndexRoute
   '/account/orders/$id': typeof AccountOrdersIdRoute
   '/admin/customers/$id': typeof AdminCustomersIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/vendors/$id': typeof AdminVendorsIdRoute
+  '/categories/$slug/$child': typeof CategoriesSlugChildRoute
   '/vendor/orders/$id': typeof VendorOrdersIdRoute
   '/vendor/products/add': typeof VendorProductsAddRoute
 }
@@ -600,6 +626,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/vendors'
     | '/admin/website'
+    | '/categories/$slug'
     | '/product/$id'
     | '/vendor/dashboard'
     | '/vendor/earnings'
@@ -613,12 +640,14 @@ export interface FileRouteTypes {
     | '/vendor/reviews'
     | '/vendor/settings'
     | '/admin/'
+    | '/categories/'
     | '/vendor/'
     | '/account/orders/$id'
     | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/products/$id'
     | '/admin/vendors/$id'
+    | '/categories/$slug/$child'
     | '/vendor/orders/$id'
     | '/vendor/products/add'
   fileRoutesByTo: FileRoutesByTo
@@ -627,7 +656,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/account'
     | '/cart'
-    | '/categories'
     | '/checkout'
     | '/contact'
     | '/login'
@@ -662,6 +690,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/vendors'
     | '/admin/website'
+    | '/categories/$slug'
     | '/product/$id'
     | '/vendor/dashboard'
     | '/vendor/earnings'
@@ -675,12 +704,14 @@ export interface FileRouteTypes {
     | '/vendor/reviews'
     | '/vendor/settings'
     | '/admin'
+    | '/categories'
     | '/vendor'
     | '/account/orders/$id'
     | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/products/$id'
     | '/admin/vendors/$id'
+    | '/categories/$slug/$child'
     | '/vendor/orders/$id'
     | '/vendor/products/add'
   id:
@@ -724,6 +755,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/vendors'
     | '/admin/website'
+    | '/categories/$slug'
     | '/product/$id'
     | '/vendor/dashboard'
     | '/vendor/earnings'
@@ -737,12 +769,14 @@ export interface FileRouteTypes {
     | '/vendor/reviews'
     | '/vendor/settings'
     | '/admin/'
+    | '/categories/'
     | '/vendor/'
     | '/account/orders/$id'
     | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/products/$id'
     | '/admin/vendors/$id'
+    | '/categories/$slug/$child'
     | '/vendor/orders/$id'
     | '/vendor/products/add'
   fileRoutesById: FileRoutesById
@@ -752,7 +786,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AccountRoute: typeof AccountRouteWithChildren
   CartRoute: typeof CartRoute
-  CategoriesRoute: typeof CategoriesRoute
+  CategoriesRoute: typeof CategoriesRouteWithChildren
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   LoginRoute: typeof LoginRoute
@@ -1077,6 +1111,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWebsiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categories/': {
+      id: '/categories/'
+      path: '/'
+      fullPath: '/categories/'
+      preLoaderRoute: typeof CategoriesIndexRouteImport
+      parentRoute: typeof CategoriesRoute
+    }
+    '/categories/$slug': {
+      id: '/categories/$slug'
+      path: '/$slug'
+      fullPath: '/categories/$slug'
+      preLoaderRoute: typeof CategoriesSlugRouteImport
+      parentRoute: typeof CategoriesRoute
+    }
     '/product/$id': {
       id: '/product/$id'
       path: '/product/$id'
@@ -1203,6 +1251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminVendorsIdRouteImport
       parentRoute: typeof AdminVendorsRoute
     }
+    '/categories/$slug/$child': {
+      id: '/categories/$slug/$child'
+      path: '/$child'
+      fullPath: '/categories/$slug/$child'
+      preLoaderRoute: typeof CategoriesSlugChildRouteImport
+      parentRoute: typeof CategoriesSlugRoute
+    }
     '/vendor/orders/$id': {
       id: '/vendor/orders/$id'
       path: '/$id'
@@ -1256,6 +1311,32 @@ const AccountRouteChildren: AccountRouteChildren = {
 
 const AccountRouteWithChildren =
   AccountRoute._addFileChildren(AccountRouteChildren)
+
+interface CategoriesSlugRouteChildren {
+  CategoriesSlugChildRoute: typeof CategoriesSlugChildRoute
+}
+
+const CategoriesSlugRouteChildren: CategoriesSlugRouteChildren = {
+  CategoriesSlugChildRoute: CategoriesSlugChildRoute,
+}
+
+const CategoriesSlugRouteWithChildren = CategoriesSlugRoute._addFileChildren(
+  CategoriesSlugRouteChildren,
+)
+
+interface CategoriesRouteChildren {
+  CategoriesSlugRoute: typeof CategoriesSlugRouteWithChildren
+  CategoriesIndexRoute: typeof CategoriesIndexRoute
+}
+
+const CategoriesRouteChildren: CategoriesRouteChildren = {
+  CategoriesSlugRoute: CategoriesSlugRouteWithChildren,
+  CategoriesIndexRoute: CategoriesIndexRoute,
+}
+
+const CategoriesRouteWithChildren = CategoriesRoute._addFileChildren(
+  CategoriesRouteChildren,
+)
 
 interface AdminCustomersRouteChildren {
   AdminCustomersIdRoute: typeof AdminCustomersIdRoute
@@ -1334,7 +1415,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AccountRoute: AccountRouteWithChildren,
   CartRoute: CartRoute,
-  CategoriesRoute: CategoriesRoute,
+  CategoriesRoute: CategoriesRouteWithChildren,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   LoginRoute: LoginRoute,
