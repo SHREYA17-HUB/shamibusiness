@@ -233,7 +233,14 @@ export const products: Product[] = productSeed.map(([name, category, subcategory
     reserved: i % 5,
     sold: 40 + i * 13,
     weight,
-    status: i % 13 === 4 ? "pending" : i % 17 === 7 ? "rejected" : "approved",
+    status:
+      i >= productSeed.length - 20
+        ? "approved"
+        : i % 13 === 4
+          ? "pending"
+          : i % 17 === 7
+            ? "rejected"
+            : "approved",
     active: i % 19 !== 5,
     tags,
     description:
