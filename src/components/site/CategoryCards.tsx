@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { isStorefrontProduct, type StoreCategory } from "@/lib/data";
+import { categorySlug, getCategoryNode } from "@/lib/category-tree";
 import { useApp } from "@/lib/store";
 
 /** Enabled storefront categories in admin-defined display order. */
