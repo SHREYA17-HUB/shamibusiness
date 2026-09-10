@@ -128,7 +128,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setUser(s.user ?? null);
         setCart(s.cart ?? []);
         setWishlist([]);
-        if (s.categories?.length) setCategories(s.categories);
+        if (s.categories?.length) {
+          setCategories(
+            s.categories.map((category) => {
+              const currentVisual = storeCategorySeed.find((seedCategory) => seedCategory.name === category.name);
+              return currentVisual ? { ...category, image: currentVisual.image } : category;
+            }),
+          );
+        }
         if (s.products?.length) setProducts(s.products);
         if (s.orders?.length) setOrders(s.orders);
         if (s.vendors?.length) setVendors(s.vendors);
