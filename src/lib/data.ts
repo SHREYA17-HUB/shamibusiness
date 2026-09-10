@@ -2,6 +2,9 @@ import sugarImg from "@/assets/p-sugar.jpg";
 import riceImg from "@/assets/p-rice.jpg";
 import oilImg from "@/assets/p-oil.jpg";
 import dalImg from "@/assets/p-dal.jpg";
+import premiumRiceCategoryImg from "@/assets/category-rice-premium.jpg";
+import premiumSugarCategoryImg from "@/assets/category-sugar-premium.jpg";
+import premiumOilCategoryImg from "@/assets/category-oil-premium.jpg";
 
 export const inr = (n: number) =>
   "₹" + Math.round(n).toLocaleString("en-IN", { maximumFractionDigits: 2 });
@@ -69,9 +72,9 @@ export type StoreCategory = {
 };
 
 export const storeCategorySeed: StoreCategory[] = [
-  { id: "C1", name: "Rice", tagline: "Raw, steam & premium grades", image: riceImg, grades: ["Grade A", "Grade B", "Premium Rice"], enabled: true, order: 1 },
-  { id: "C2", name: "Sugar", tagline: "Mill-fresh refined sugar", image: sugarImg, grades: ["Grade S1"], enabled: true, order: 2 },
-  { id: "C3", name: "Oil", tagline: "Edible oils in every pack size", image: oilImg, grades: ["Sunflower Oil", "Groundnut Oil", "Palm Oil"], enabled: true, order: 3 },
+  { id: "C1", name: "Rice", tagline: "Raw, steam & premium grades", image: premiumRiceCategoryImg, grades: ["Grade A", "Grade B", "Premium Rice"], enabled: true, order: 1 },
+  { id: "C2", name: "Sugar", tagline: "Mill-fresh refined sugar", image: premiumSugarCategoryImg, grades: ["Grade S1"], enabled: true, order: 2 },
+  { id: "C3", name: "Oil", tagline: "Edible oils in every pack size", image: premiumOilCategoryImg, grades: ["Sunflower Oil", "Groundnut Oil", "Palm Oil"], enabled: true, order: 3 },
 ];
 
 /* Storefront visibility: Rice, Sugar (S1 only) and Oil. */
