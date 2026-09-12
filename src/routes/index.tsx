@@ -1,203 +1,225 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BadgeCheck,
-  Headset,
-  ShieldCheck,
-  Truck,
-} from "lucide-react";
-import { SiteLayout, SectionHeading } from "@/components/site/SiteLayout";
-import { ProductCard } from "@/components/site/ProductCard";
-import { byTag, isStorefrontProduct, products } from "@/lib/data";
-import { CategoryCards } from "@/components/site/CategoryCards";
+import { useState, type FormEvent } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, BadgeCheck, Search, ShieldCheck, ShoppingCart, Truck } from "lucide-react";
+import { toast } from "sonner";
+import { SiteLayout } from "@/components/site/SiteLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { inr, isStorefrontProduct, storeCategorySeed, type Product } from "@/lib/data";
+import { useApp } from "@/lib/store";
 import heroImg from "@/assets/hero-sugar.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Shami Business Ventures — Rice, Sugar & Oil Marketplace" },
+      { title: "Shami Business Ventures | ಅಕ್ಕಿ, ಸಕ್ಕರೆ ಮತ್ತು ಎಣ್ಣೆ" },
       {
         name: "description",
-        content:
-          "Buy premium rice, S1 refined sugar and edible oils from verified mills. Bulk bags, retail packs, GST invoicing and pan-India delivery by Shami Business Ventures Pvt. Ltd.",
+        content: "Shami Business Ventures ನಲ್ಲಿ ಉತ್ತಮ ಗುಣಮಟ್ಟದ ಅಕ್ಕಿ, ಸಕ್ಕರೆ ಮತ್ತು ಎಣ್ಣೆಯನ್ನು ಸುಲಭವಾಗಿ ಹುಡುಕಿ ಮತ್ತು ಖರೀದಿಸಿ.",
       },
-      { property: "og:title", content: "Rice, Sugar & Oil Marketplace | Shami Business Ventures" },
+      { property: "og:title", content: "Shami Business Ventures | ಅಕ್ಕಿ, ಸಕ್ಕರೆ ಮತ್ತು ಎಣ್ಣೆ" },
       {
         property: "og:description",
-        content: "Quality rice, sugar and oil delivered to your door from trusted mills.",
+        content: "ಉತ್ತಮ ಗುಣಮಟ್ಟದ ದಿನಸಿ ಉತ್ಪನ್ನಗಳನ್ನು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ಸುಲಭವಾಗಿ ಖರೀದಿಸಿ.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
 });
 
+const categoryLabels: Record<string, string> = {
+  Rice: "ಅಕ್ಕಿ",
+  Sugar: "ಸಕ್ಕರೆ",
+  Oil: "ಎಣ್ಣೆ",
+};
 
 function Index() {
+  const { products } = useApp();
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+  const popularProducts = products.filter(isStorefrontProduct).slice(0, 8);
+
+  const searchProducts = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    navigate({ to: "/shop", search: { q: query.trim() } });
+  };
+
   return (
     <SiteLayout>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-hero-gradient">
-        <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
-        <div className="pointer-events-none absolute right-0 bottom-0 h-96 w-96 rounded-full bg-gold/8 blur-3xl" />
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
-          <div className="animate-rise">
-            <span className="inline-flex items-center gap-2 rounded-full border border-gold/40 px-4 py-1.5 text-[11px] font-bold tracking-[0.18em] text-gold uppercase">
-              Shami Business Ventures Pvt. Ltd.
-            </span>
-            <h1 className="mt-6 text-4xl leading-[1.08] font-extrabold text-white sm:text-5xl lg:text-6xl">
-              Premium S1 Sugar <br />
-              Delivered to <span className="text-gold-gradient">Your Door</span>
+      <section className="relative isolate min-h-[430px] overflow-hidden bg-midnight sm:min-h-[500px]">
+        <img
+          src={heroImg}
+          alt="ಪ್ರೀಮಿಯಂ ಸಕ್ಕರೆ ಮತ್ತು ದಿನಸಿ ಉತ್ಪನ್ನಗಳು"
+          width={1408}
+          height={1008}
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover object-center opacity-55"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/85 to-midnight/25" />
+        <div className="relative mx-auto flex min-h-[430px] max-w-7xl items-center px-4 py-12 sm:min-h-[500px] sm:px-6 sm:py-16">
+          <div className="animate-rise w-full max-w-2xl">
+            <p className="text-sm font-bold text-gold">Shami Business Ventures</p>
+            <h1 className="mt-3 max-w-2xl text-3xl leading-tight font-extrabold text-white sm:text-5xl">
+              ನಿಮಗೆ ಬೇಕಾದ ಉತ್ತಮ ಗುಣಮಟ್ಟದ ಉತ್ಪನ್ನಗಳು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ
             </h1>
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-white/70">
-              Shop S1 refined sugar directly from certified mills. Batch traceability, moisture-controlled packaging
-              and GST-compliant invoicing for retail and institutional buyers.
+            <p className="mt-4 max-w-xl text-sm leading-6 text-white/80 sm:text-base">
+              ಅಕ್ಕಿ, ಸಕ್ಕರೆ ಮತ್ತು ಎಣ್ಣೆ ಉತ್ಪನ್ನಗಳನ್ನು ಸುಲಭವಾಗಿ ಹುಡುಕಿ ಮತ್ತು ಖರೀದಿಸಿ.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                to="/shop"
-                className="inline-flex items-center gap-2 rounded-md bg-gold px-7 py-3.5 text-sm font-bold text-midnight transition-colors hover:bg-gold-light"
-              >
-                Shop Now <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/categories"
-                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:border-gold hover:text-gold"
-              >
-                Explore Products
-              </Link>
-            </div>
-            <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-white/10 pt-8">
-              {[
-                ["120+", "Verified vendors"],
-                ["18,400+", "Orders fulfilled"],
-                ["4.8/5", "Buyer rating"],
-              ].map(([v, l]) => (
-                <div key={l}>
-                  <dt className="text-xl font-bold text-gold sm:text-2xl">{v}</dt>
-                  <dd className="mt-1 text-xs text-white/60">{l}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          <div className="relative">
-            <div className="animate-float relative rounded-2xl border border-gold/25 bg-white/5 p-3 shadow-elevated backdrop-blur-sm">
-              <img
-                src={heroImg}
-                alt="Premium refined sugar in a burlap sack with a gold scoop"
-                width={1408}
-                height={1008}
-                className="w-full rounded-xl object-cover"
-              />
-            </div>
-            <div className="absolute -bottom-6 -left-4 hidden rounded-xl border border-border bg-card p-4 shadow-elevated sm:block">
-              <p className="text-[11px] font-semibold tracking-wider text-slate uppercase">Starting from</p>
-              <p className="text-xl font-bold text-navy">
-                ₹2,299 <span className="text-xs font-medium text-slate">/ 50kg bag</span>
-              </p>
+            <form onSubmit={searchProducts} className="mt-7 flex max-w-xl gap-2 rounded-lg bg-card p-2 shadow-elevated">
+              <div className="relative min-w-0 flex-1">
+                <Search className="pointer-events-none absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-slate" />
+                <Input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="ನಿಮಗೆ ಬೇಕಾದ ಉತ್ಪನ್ನವನ್ನು ಹುಡುಕಿ"
+                  aria-label="ಉತ್ಪನ್ನಗಳನ್ನು ಹುಡುಕಿ"
+                  className="h-12 border-0 bg-transparent pl-10 shadow-none focus-visible:ring-0"
+                />
+              </div>
+              <Button type="submit" className="h-12 shrink-0 px-5 font-bold">
+                <Search className="h-4 w-4 sm:hidden" />
+                <span className="hidden sm:inline">ಹುಡುಕಿ</span>
+              </Button>
+            </form>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Button asChild size="lg" className="h-11 bg-gold font-bold text-midnight hover:bg-gold-light">
+                <Link to="/shop">ಈಗ ಖರೀದಿಸಿ <ArrowRight /></Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-11 border-white/40 bg-midnight/20 text-white hover:bg-card hover:text-navy">
+                <Link to="/cart"><ShoppingCart /> ಕಾರ್ಟ್</Link>
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Trust bar */}
       <section className="border-b border-border bg-ivory">
-        <div className="mx-auto grid max-w-7xl gap-6 px-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-7xl grid-cols-3 gap-2 px-4 py-5 sm:gap-6 sm:px-6">
           {[
-            [ShieldCheck, "Verified Vendors", "KYC & GST validated mills"],
-            [Truck, "Pan-India Freight", "Tracked delivery in 2–4 days"],
-            [BadgeCheck, "FSSAI Compliant", "Batch-level quality reports"],
-            [Headset, "Dedicated Support", "Account manager for bulk buyers"],
-          ].map(([Icon, title, sub]) => {
-            const I = Icon as React.ComponentType<{ className?: string }>;
+            [ShieldCheck, "ಪರಿಶೀಲಿಸಿದ ಮಾರಾಟಗಾರರು"],
+            [BadgeCheck, "ಉತ್ತಮ ಗುಣಮಟ್ಟ"],
+            [Truck, "ಭಾರತದಾದ್ಯಂತ ಡೆಲಿವರಿ"],
+          ].map(([Icon, label]) => {
+            const TrustIcon = Icon as typeof ShieldCheck;
             return (
-              <div key={title as string} className="flex items-start gap-3">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-navy/5 text-gold">
-                  <I className="h-5 w-5" />
+              <div key={label as string} className="flex flex-col items-center gap-2 text-center sm:flex-row sm:text-left">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-navy/5 text-gold sm:h-10 sm:w-10">
+                  <TrustIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                 </span>
-                <div className="min-w-0">
-                  <p className="font-semibold text-navy">{title as string}</p>
-                  <p className="text-xs text-slate">{sub as string}</p>
-                </div>
+                <span className="text-[11px] font-semibold leading-4 text-navy sm:text-sm">{label as string}</span>
               </div>
             );
           })}
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-        <SectionHeading
-          eyebrow="Browse the catalogue"
-          title="Shop by Category"
-          action={
-            <Link to="/categories" className="hidden text-sm font-semibold text-navy hover:text-gold sm:block">
-              View all
-            </Link>
-          }
-        />
-        <CategoryCards />
-      </section>
-
-      <ProductRow eyebrow="Handpicked" title="Featured Products" items={byTag("featured")} />
-      <section className="bg-ivory">
-        <ProductRow eyebrow="Most ordered" title="Best Sellers" items={byTag("bestseller")} />
-      </section>
-      <ProductRow eyebrow="Fresh in store" title="New Arrivals" items={byTag("new")} />
-
-      {/* Offer banner */}
-      <section className="mx-auto max-w-7xl px-6 pb-16">
-        <div className="relative overflow-hidden rounded-2xl bg-hero-gradient px-8 py-14 text-center">
-          <div className="pointer-events-none absolute inset-0 opacity-30 [background:radial-gradient(circle_at_20%_20%,var(--gold),transparent_40%)]" />
-          <p className="text-[11px] font-bold tracking-[0.2em] text-gold uppercase">Bulk buyer offer</p>
-          <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">
-            Save up to <span className="text-gold">₹750</span> on orders above ₹25,000
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-white/70">
-            Use code SUGARBULK at checkout. Applicable on S1, S2 and M30 sugar bags from verified mills.
-          </p>
-          <Link
-            to="/offers"
-            className="mt-8 inline-flex items-center gap-2 rounded-md bg-gold px-7 py-3.5 text-sm font-bold text-midnight transition-colors hover:bg-gold-light"
-          >
-            View All Offers <ArrowRight className="h-4 w-4" />
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold text-gold">ಸುಲಭವಾಗಿ ಆಯ್ಕೆ ಮಾಡಿ</p>
+            <h2 className="mt-1 text-2xl font-bold text-navy sm:text-3xl">ವರ್ಗದ ಪ್ರಕಾರ ಖರೀದಿಸಿ</h2>
+          </div>
+          <Link to="/categories" className="shrink-0 text-sm font-semibold text-navy transition-colors hover:text-gold">
+            ಎಲ್ಲವನ್ನೂ ನೋಡಿ
           </Link>
+        </div>
+        <div className="grid grid-cols-3 gap-3 sm:gap-6">
+          {storeCategorySeed.map((category) => {
+            const slug = category.name.toLowerCase();
+            return (
+              <Link
+                key={category.id}
+                to="/categories/$slug"
+                params={{ slug }}
+                className="group flex min-w-0 flex-col items-center rounded-lg border border-border bg-card px-2 py-4 text-center shadow-card transition-all hover:-translate-y-1 hover:border-gold hover:shadow-elevated sm:px-5 sm:py-7"
+              >
+                <span className="block aspect-square w-full max-w-28 overflow-hidden rounded-full bg-ivory ring-4 ring-ivory sm:max-w-40">
+                  <img
+                    src={category.image}
+                    alt={`${categoryLabels[category.name] ?? category.name} ಉತ್ಪನ್ನ`}
+                    width={640}
+                    height={640}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </span>
+                <span className="mt-3 text-base font-bold text-navy sm:text-xl">{categoryLabels[category.name] ?? category.name}</span>
+                <span className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-gold sm:text-sm">
+                  ನೋಡಿ <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
-      <ProductRow eyebrow="Picked for you" title="Recommended Products" items={byTag("recommended")} />
       <section className="bg-ivory">
-        <ProductRow eyebrow="Continue where you left" title="Recently Viewed" items={products.filter((p) => isStorefrontProduct(p)).slice(0, 4)} />
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold text-gold">ನಿಮಗಾಗಿ ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</p>
+              <h2 className="mt-1 text-2xl font-bold text-navy sm:text-3xl">ಜನಪ್ರಿಯ ಉತ್ಪನ್ನಗಳು</h2>
+            </div>
+            <Link to="/shop" className="shrink-0 text-sm font-semibold text-navy transition-colors hover:text-gold">
+              ಎಲ್ಲವನ್ನೂ ನೋಡಿ
+            </Link>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+            {popularProducts.map((product) => <HomeProductCard key={product.id} product={product} />)}
+          </div>
+          <div className="mt-8 text-center">
+            <Button asChild size="lg" className="h-11 px-7 font-bold">
+              <Link to="/shop">ಎಲ್ಲಾ ಉತ್ಪನ್ನಗಳು <ArrowRight /></Link>
+            </Button>
+          </div>
+        </div>
       </section>
     </SiteLayout>
   );
 }
 
-function ProductRow({
-  eyebrow,
-  title,
-  items,
-}: {
-  eyebrow: string;
-  title: string;
-  items: ReturnType<typeof byTag>;
-}) {
+function HomeProductCard({ product }: { product: Product }) {
+  const { addToCart } = useApp();
+  const navigate = useNavigate();
+  const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+
+  const add = () => {
+    addToCart(product.id);
+    toast.success("ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಲಾಗಿದೆ", { description: product.name });
+  };
+
+  const buy = () => {
+    addToCart(product.id);
+    navigate({ to: "/checkout" });
+  };
+
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <SectionHeading
-        eyebrow={eyebrow}
-        title={title}
-        action={
-          <Link to="/shop" className="hidden text-sm font-semibold text-navy hover:text-gold sm:block">
-            View all
-          </Link>
-        }
-      />
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {items.slice(0, 4).map((p) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
+    <article className="grid min-h-32 grid-cols-[104px_minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card shadow-card sm:flex sm:min-h-0 sm:flex-col">
+      <Link to="/product/$id" params={{ id: product.id }} className="relative block overflow-hidden bg-background sm:aspect-square">
+        <img src={product.image} alt={product.name} width={600} height={600} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+        {discount > 0 && (
+          <span className="absolute top-2 left-2 rounded-full bg-gold px-2 py-1 text-[10px] font-bold text-midnight">{discount}% OFF</span>
+        )}
+      </Link>
+      <div className="flex min-w-0 flex-col p-3 sm:p-4">
+        <Link to="/product/$id" params={{ id: product.id }} className="line-clamp-2 text-sm font-semibold leading-5 text-navy hover:text-gold sm:text-base">
+          {product.name}
+        </Link>
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
+          <span className="font-bold text-navy">{inr(product.price)}</span>
+          {discount > 0 && <span className="text-xs text-slate line-through">{inr(product.mrp)}</span>}
+        </div>
+        <div className="mt-auto grid grid-cols-2 gap-2 pt-3">
+          <Button type="button" variant="outline" size="sm" onClick={add} disabled={product.stock === 0} className="h-9 px-2 font-bold">
+            <ShoppingCart /> ಸೇರಿಸಿ
+          </Button>
+          <Button type="button" size="sm" onClick={buy} disabled={product.stock === 0} className="h-9 px-2 font-bold">
+            ಈಗ ಖರೀದಿಸಿ
+          </Button>
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
