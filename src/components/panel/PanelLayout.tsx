@@ -5,6 +5,7 @@ import { LogoMark } from "@/components/brand/Logo";
 import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 
 export type NavItem = { label: string; to: string; icon: React.ComponentType<{ className?: string }> };
 

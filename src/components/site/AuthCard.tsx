@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { LogoMark } from "@/components/brand/Logo";
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 
 export function AuthCard({
   title,
