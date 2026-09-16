@@ -99,6 +99,7 @@ export function PanelLayout({
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
+              <LanguageSwitcher />
               <div className="relative hidden md:block">
                 <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate" />
                 <Input placeholder="Search…" className="h-9 w-56 pl-9" />
