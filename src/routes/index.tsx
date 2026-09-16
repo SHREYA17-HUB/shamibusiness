@@ -7,20 +7,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { inr, isStorefrontProduct, storeCategorySeed, type Product } from "@/lib/data";
 import { useApp } from "@/lib/store";
+import { useLanguage } from "@/lib/i18n";
 import heroImg from "@/assets/hero-sugar.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Shami Business Ventures | ಅಕ್ಕಿ, ಸಕ್ಕರೆ ಮತ್ತು ಎಣ್ಣೆ" },
+      { title: "Shami Business Ventures | Rice, Sugar & Oil" },
       {
         name: "description",
-        content: "Shami Business Ventures ನಲ್ಲಿ ಉತ್ತಮ ಗುಣಮಟ್ಟದ ಅಕ್ಕಿ, ಸಕ್ಕರೆ ಮತ್ತು ಎಣ್ಣೆಯನ್ನು ಸುಲಭವಾಗಿ ಹುಡುಕಿ ಮತ್ತು ಖರೀದಿಸಿ.",
+        content: "Find and buy quality rice, sugar and oil products with ease at Shami Business Ventures.",
       },
-      { property: "og:title", content: "Shami Business Ventures | ಅಕ್ಕಿ, ಸಕ್ಕರೆ ಮತ್ತು ಎಣ್ಣೆ" },
+      { property: "og:title", content: "Shami Business Ventures | Rice, Sugar & Oil" },
       {
         property: "og:description",
-        content: "ಉತ್ತಮ ಗುಣಮಟ್ಟದ ದಿನಸಿ ಉತ್ಪನ್ನಗಳನ್ನು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ಸುಲಭವಾಗಿ ಖರೀದಿಸಿ.",
+        content: "Buy quality grocery products from verified vendors, all in one place.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -29,14 +30,9 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const categoryLabels: Record<string, string> = {
-  Rice: "ಅಕ್ಕಿ",
-  Sugar: "ಸಕ್ಕರೆ",
-  Oil: "ಎಣ್ಣೆ",
-};
-
 function Index() {
   const { products } = useApp();
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const popularProducts = products.filter(isStorefrontProduct).slice(0, 8);
@@ -51,7 +47,7 @@ function Index() {
       <section className="relative isolate min-h-[430px] overflow-hidden bg-midnight sm:min-h-[500px]">
         <img
           src={heroImg}
-          alt="ಪ್ರೀಮಿಯಂ ಸಕ್ಕರೆ ಮತ್ತು ದಿನಸಿ ಉತ್ಪನ್ನಗಳು"
+          alt="Premium sugar and grocery products"
           width={1408}
           height={1008}
           fetchPriority="high"
@@ -60,12 +56,12 @@ function Index() {
         <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/85 to-midnight/25" />
         <div className="relative mx-auto flex min-h-[430px] max-w-7xl items-center px-4 py-12 sm:min-h-[500px] sm:px-6 sm:py-16">
           <div className="animate-rise w-full max-w-2xl">
-            <p className="text-sm font-bold text-gold">Shami Business Ventures</p>
+            <p className="text-sm font-bold text-gold" data-no-translate>Shami Business Ventures</p>
             <h1 className="mt-3 max-w-2xl text-3xl leading-tight font-extrabold text-white sm:text-5xl">
-              ನಿಮಗೆ ಬೇಕಾದ ಉತ್ತಮ ಗುಣಮಟ್ಟದ ಉತ್ಪನ್ನಗಳು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ
+              Quality products you need, all in one place
             </h1>
             <p className="mt-4 max-w-xl text-sm leading-6 text-white/80 sm:text-base">
-              ಅಕ್ಕಿ, ಸಕ್ಕರೆ ಮತ್ತು ಎಣ್ಣೆ ಉತ್ಪನ್ನಗಳನ್ನು ಸುಲಭವಾಗಿ ಹುಡುಕಿ ಮತ್ತು ಖರೀದಿಸಿ.
+              Find and buy rice, sugar and oil products with ease.
             </p>
             <form onSubmit={searchProducts} className="mt-7 flex max-w-xl gap-2 rounded-lg bg-card p-2 shadow-elevated">
               <div className="relative min-w-0 flex-1">
@@ -73,22 +69,22 @@ function Index() {
                 <Input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="ನಿಮಗೆ ಬೇಕಾದ ಉತ್ಪನ್ನವನ್ನು ಹುಡುಕಿ"
-                  aria-label="ಉತ್ಪನ್ನಗಳನ್ನು ಹುಡುಕಿ"
+                  placeholder={t("Find the product you need")}
+                  aria-label={t("Search products")}
                   className="h-12 border-0 bg-transparent pl-10 shadow-none focus-visible:ring-0"
                 />
               </div>
               <Button type="submit" className="h-12 shrink-0 px-5 font-bold">
                 <Search className="h-4 w-4 sm:hidden" />
-                <span className="hidden sm:inline">ಹುಡುಕಿ</span>
+                <span className="hidden sm:inline">Search</span>
               </Button>
             </form>
             <div className="mt-5 flex flex-wrap gap-2">
               <Button asChild size="lg" className="h-11 bg-gold font-bold text-midnight hover:bg-gold-light">
-                <Link to="/shop">ಈಗ ಖರೀದಿಸಿ <ArrowRight /></Link>
+                <Link to="/shop">Shop now <ArrowRight /></Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="h-11 border-white/40 bg-midnight/20 text-white hover:bg-card hover:text-navy">
-                <Link to="/cart"><ShoppingCart /> ಕಾರ್ಟ್</Link>
+                <Link to="/cart"><ShoppingCart /> Cart</Link>
               </Button>
             </div>
           </div>
@@ -98,9 +94,9 @@ function Index() {
       <section className="border-b border-border bg-ivory">
         <div className="mx-auto grid max-w-7xl grid-cols-3 gap-2 px-4 py-5 sm:gap-6 sm:px-6">
           {[
-            [ShieldCheck, "ಪರಿಶೀಲಿಸಿದ ಮಾರಾಟಗಾರರು"],
-            [BadgeCheck, "ಉತ್ತಮ ಗುಣಮಟ್ಟ"],
-            [Truck, "ಭಾರತದಾದ್ಯಂತ ಡೆಲಿವರಿ"],
+            [ShieldCheck, "Verified sellers"],
+            [BadgeCheck, "Quality assured"],
+            [Truck, "Delivery across India"],
           ].map(([Icon, label]) => {
             const TrustIcon = Icon as typeof ShieldCheck;
             return (
@@ -118,11 +114,11 @@ function Index() {
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-bold text-gold">ಸುಲಭವಾಗಿ ಆಯ್ಕೆ ಮಾಡಿ</p>
-            <h2 className="mt-1 text-2xl font-bold text-navy sm:text-3xl">ವರ್ಗದ ಪ್ರಕಾರ ಖರೀದಿಸಿ</h2>
+            <p className="text-xs font-bold text-gold">Choose with ease</p>
+            <h2 className="mt-1 text-2xl font-bold text-navy sm:text-3xl">Shop by Category</h2>
           </div>
           <Link to="/categories" className="shrink-0 text-sm font-semibold text-navy transition-colors hover:text-gold">
-            ಎಲ್ಲವನ್ನೂ ನೋಡಿ
+            View all
           </Link>
         </div>
         <div className="grid grid-cols-3 gap-3 sm:gap-6">
@@ -138,16 +134,16 @@ function Index() {
                 <span className="block aspect-square w-full max-w-28 overflow-hidden rounded-full bg-ivory ring-4 ring-ivory sm:max-w-40">
                   <img
                     src={category.image}
-                    alt={`${categoryLabels[category.name] ?? category.name} ಉತ್ಪನ್ನ`}
+                    alt={t(category.name)}
                     width={640}
                     height={640}
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </span>
-                <span className="mt-3 text-base font-bold text-navy sm:text-xl">{categoryLabels[category.name] ?? category.name}</span>
+                <span className="mt-3 text-base font-bold text-navy sm:text-xl">{category.name}</span>
                 <span className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-gold sm:text-sm">
-                  ನೋಡಿ <ArrowRight className="h-3.5 w-3.5" />
+                  View <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </Link>
             );
@@ -159,11 +155,11 @@ function Index() {
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-bold text-gold">ನಿಮಗಾಗಿ ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</p>
-              <h2 className="mt-1 text-2xl font-bold text-navy sm:text-3xl">ಜನಪ್ರಿಯ ಉತ್ಪನ್ನಗಳು</h2>
+              <p className="text-xs font-bold text-gold">Picked for you</p>
+              <h2 className="mt-1 text-2xl font-bold text-navy sm:text-3xl">Popular Products</h2>
             </div>
             <Link to="/shop" className="shrink-0 text-sm font-semibold text-navy transition-colors hover:text-gold">
-              ಎಲ್ಲವನ್ನೂ ನೋಡಿ
+              View all
             </Link>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
@@ -171,7 +167,7 @@ function Index() {
           </div>
           <div className="mt-8 text-center">
             <Button asChild size="lg" className="h-11 px-7 font-bold">
-              <Link to="/shop">ಎಲ್ಲಾ ಉತ್ಪನ್ನಗಳು <ArrowRight /></Link>
+              <Link to="/shop">All Products <ArrowRight /></Link>
             </Button>
           </div>
         </div>
@@ -182,12 +178,13 @@ function Index() {
 
 function HomeProductCard({ product }: { product: Product }) {
   const { addToCart } = useApp();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
 
   const add = () => {
     addToCart(product.id);
-    toast.success("ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಲಾಗಿದೆ", { description: product.name });
+    toast.success(t("Added to cart"), { description: t(product.name) });
   };
 
   const buy = () => {
@@ -200,7 +197,7 @@ function HomeProductCard({ product }: { product: Product }) {
       <Link to="/product/$id" params={{ id: product.id }} className="relative block overflow-hidden bg-background sm:aspect-square">
         <img src={product.image} alt={product.name} width={600} height={600} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
         {discount > 0 && (
-          <span className="absolute top-2 left-2 rounded-full bg-gold px-2 py-1 text-[10px] font-bold text-midnight">{discount}% OFF</span>
+          <span className="absolute top-2 left-2 rounded-full bg-gold px-2 py-1 text-[10px] font-bold text-midnight" data-no-translate>{discount}% OFF</span>
         )}
       </Link>
       <div className="flex min-w-0 flex-col p-3 sm:p-4">
@@ -208,15 +205,15 @@ function HomeProductCard({ product }: { product: Product }) {
           {product.name}
         </Link>
         <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
-          <span className="font-bold text-navy">{inr(product.price)}</span>
-          {discount > 0 && <span className="text-xs text-slate line-through">{inr(product.mrp)}</span>}
+          <span className="font-bold text-navy" data-no-translate>{inr(product.price)}</span>
+          {discount > 0 && <span className="text-xs text-slate line-through" data-no-translate>{inr(product.mrp)}</span>}
         </div>
         <div className="mt-auto grid grid-cols-2 gap-2 pt-3">
           <Button type="button" variant="outline" size="sm" onClick={add} disabled={product.stock === 0} className="h-9 px-2 font-bold">
-            <ShoppingCart /> ಸೇರಿಸಿ
+            <ShoppingCart /> Add
           </Button>
           <Button type="button" size="sm" onClick={buy} disabled={product.stock === 0} className="h-9 px-2 font-bold">
-            ಈಗ ಖರೀದಿಸಿ
+            Buy Now
           </Button>
         </div>
       </div>
