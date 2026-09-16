@@ -5,6 +5,7 @@ import { Logo } from "@/components/brand/Logo";
 import { useApp } from "@/lib/store";
 import { Input } from "@/components/ui/input";
 import { isStorefrontProduct, products } from "@/lib/data";
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 
 const nav = [
   { label: "Home", to: "/" },
@@ -35,6 +36,7 @@ export function SiteHeader() {
       <div className="hidden bg-midnight text-[13px] text-white/70 md:block">
         <div className="mx-auto flex max-w-7xl items-center justify-end px-6 py-2">
           <div className="flex items-center gap-5">
+            <LanguageSwitcher light />
             <Link to="/vendor/login" className="transition-colors hover:text-gold">
               Vendor Panel
             </Link>

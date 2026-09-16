@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { LogoMark } from "@/components/brand/Logo";
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 
 export function AuthCard({
   title,
@@ -33,8 +34,11 @@ export function AuthCard({
 
       <div className="flex items-center justify-center bg-background p-6 sm:p-12">
         <div className="w-full max-w-md">
-          <div className="lg:hidden">
-            <LogoMark className="h-11" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="lg:hidden">
+              <LogoMark className="h-11" />
+            </div>
+            <LanguageSwitcher className="ml-auto" />
           </div>
           <h1 className="mt-6 text-2xl font-bold text-navy">{title}</h1>
           <p className="mt-1.5 text-sm text-slate">{subtitle}</p>
