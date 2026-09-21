@@ -44,79 +44,28 @@ function Index() {
 
   return (
     <SiteLayout>
-      <section className="relative isolate min-h-[430px] overflow-hidden bg-midnight sm:min-h-[500px]">
-        <img
-          src={heroImg}
-          alt="Premium sugar and grocery products"
-          width={1408}
-          height={1008}
-          fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover object-center opacity-55"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/85 to-midnight/25" />
-        <div className="relative mx-auto flex min-h-[430px] max-w-7xl items-center px-4 py-12 sm:min-h-[500px] sm:px-6 sm:py-16">
-          <div className="animate-rise w-full max-w-2xl">
-            <p className="text-sm font-bold text-gold" data-no-translate>Shami Business Ventures</p>
-            <h1 className="mt-3 max-w-2xl text-3xl leading-tight font-extrabold text-white sm:text-5xl">
-              Quality products you need, all in one place
-            </h1>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-white/80 sm:text-base">
-              Find and buy rice, sugar and oil products with ease.
-            </p>
-            <form onSubmit={searchProducts} className="mt-7 flex max-w-xl gap-2 rounded-lg bg-card p-2 shadow-elevated">
-              <div className="relative min-w-0 flex-1">
-                <Search className="pointer-events-none absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-slate" />
-                <Input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder={t("Find the product you need")}
-                  aria-label={t("Search products")}
-                  className="h-12 border-0 bg-transparent pl-10 shadow-none focus-visible:ring-0"
-                />
-              </div>
-              <Button type="submit" className="h-12 shrink-0 px-5 font-bold">
-                <Search className="h-4 w-4 sm:hidden" />
-                <span className="hidden sm:inline">Search</span>
-              </Button>
-            </form>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <Button asChild size="lg" className="h-11 bg-gold font-bold text-midnight hover:bg-gold-light">
-                <Link to="/shop">Shop now <ArrowRight /></Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="h-11 border-white/40 bg-midnight/20 text-white hover:bg-card hover:text-navy">
-                <Link to="/cart"><ShoppingCart /> Cart</Link>
-              </Button>
-            </div>
+      <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
+        <form onSubmit={searchProducts} className="flex max-w-xl gap-2">
+          <div className="relative min-w-0 flex-1">
+            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate" />
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t("Search category, product, code or brand")}
+              aria-label={t("Search products")}
+              className="h-10 rounded-full pl-9 text-sm"
+            />
           </div>
-        </div>
+          <Button type="submit" size="sm" className="h-10 shrink-0 rounded-full px-4 font-bold">
+            <Search className="h-4 w-4 sm:hidden" />
+            <span className="hidden sm:inline">Search</span>
+          </Button>
+        </form>
       </section>
 
-      <section className="border-b border-border bg-ivory">
-        <div className="mx-auto grid max-w-7xl grid-cols-3 gap-2 px-4 py-5 sm:gap-6 sm:px-6">
-          {[
-            [ShieldCheck, "Verified sellers"],
-            [BadgeCheck, "Quality assured"],
-            [Truck, "Delivery across India"],
-          ].map(([Icon, label]) => {
-            const TrustIcon = Icon as typeof ShieldCheck;
-            return (
-              <div key={label as string} className="flex flex-col items-center gap-2 text-center sm:flex-row sm:text-left">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-navy/5 text-gold sm:h-10 sm:w-10">
-                  <TrustIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                </span>
-                <span className="text-[11px] font-semibold leading-4 text-navy sm:text-sm">{label as string}</span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold text-gold">Choose with ease</p>
-            <h2 className="mt-1 text-2xl font-bold text-navy sm:text-3xl">Shop by Category</h2>
-          </div>
+      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <h2 className="text-2xl font-bold text-navy sm:text-3xl">Shop by Category</h2>
           <Link to="/categories" className="shrink-0 text-sm font-semibold text-navy transition-colors hover:text-gold">
             View all
           </Link>

@@ -62,8 +62,11 @@ function Shop() {
         (p) =>
           p.name.toLowerCase().includes(t) ||
           p.sku.toLowerCase().includes(t) ||
+          p.brand.toLowerCase().includes(t) ||
           p.vendor.toLowerCase().includes(t) ||
-          p.category.toLowerCase().includes(t),
+          p.category.toLowerCase().includes(t) ||
+          p.subcategory.toLowerCase().includes(t) ||
+          p.weight.toLowerCase().includes(t),
       );
     }
     if (cats.length) {
