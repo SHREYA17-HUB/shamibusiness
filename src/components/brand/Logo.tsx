@@ -23,6 +23,12 @@ export function Logo({
         height={512}
         className="h-11 w-auto rounded-lg bg-white object-contain p-1 sm:h-12"
       />
+      <span
+        data-no-translate
+        className="ml-2 hidden text-base font-extrabold tracking-wide text-white sm:inline sm:text-lg"
+      >
+        GRAIN BAZAR
+      </span>
     </Link>
   );
 }
